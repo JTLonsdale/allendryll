@@ -1,0 +1,58 @@
+const HUD = {
+  draw(ctx, canvas) {
+    const leader = player.party[0];
+    const w = canvas.width;
+    const panelW = 220;
+    const panelH = 110;
+    const px = w - panelW - 10;
+    const py = 10;
+
+    // Background
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+    ctx.fillRect(px, py, panelW, panelH);
+    ctx.strokeStyle = '#ffd700';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(px, py, panelW, panelH);
+
+    ctx.textAlign = 'left';
+
+    // Name
+    ctx.fillStyle = '#ffd700';
+    ctx.font = 'bold 16px sans-serif';
+    ctx.fillText(leader.name, px + 12, py + 24);
+
+    // Role
+    ctx.fillStyle = '#e84393';
+    ctx.font = '12px sans-serif';
+    ctx.fillText(leader.role, px + 12, py + 40);
+
+    // HP bar
+    ctx.fillStyle = '#aaa';
+    ctx.font = '13px sans-serif';
+    ctx.fillText('HP', px + 12, py + 60);
+    ctx.fillStyle = '#333';
+    ctx.fillRect(px + 35, py + 50, 120, 12);
+    ctx.fillStyle = leader.hp > leader.maxHp * 0.3 ? '#27ae60' : '#e74c3c';
+    ctx.fillRect(px + 35, py + 50, 120 * (leader.hp / leader.maxHp), 12);
+    ctx.fillStyle = '#fff';
+    ctx.font = '11px sans-serif';
+    ctx.fillText(`${leader.hp}/${leader.maxHp}`, px + 160, py + 60);
+
+    // MP bar
+    ctx.fillStyle = '#aaa';
+    ctx.font = '13px sans-serif';
+    ctx.fillText('MP', px + 12, py + 80);
+    ctx.fillStyle = '#333';
+    ctx.fillRect(px + 35, py + 70, 120, 12);
+    ctx.fillStyle = '#2980b9';
+    ctx.fillRect(px + 35, py + 70, 120 * (leader.mp / leader.maxMp), 12);
+    ctx.fillStyle = '#fff';
+    ctx.font = '11px sans-serif';
+    ctx.fillText(`${leader.mp}/${leader.maxMp}`, px + 160, py + 80);
+
+    // Gold
+    ctx.fillStyle = '#ffd700';
+    ctx.font = '13px sans-serif';
+    ctx.fillText(`Gold: ${player.gold}`, px + 12, py + 100);
+  }
+};
