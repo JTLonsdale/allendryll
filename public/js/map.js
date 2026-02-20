@@ -2,7 +2,14 @@
 const TILE = {
   GRASS: 0, WATER: 1, MOUNTAIN: 2, TOWN: 3,
   DENSE_FOREST: 4, TREES: 5, PATH: 6, SAND: 7,
-  BRIDGE: 8, FLOWERS: 9
+  BRIDGE: 8, FLOWERS: 9,
+  // Town interior tiles (10-31)
+  COBBLE: 10, WOOD_FLOOR: 11, WALL: 12, WALL_TOP: 13,
+  COUNTER: 14, DOOR: 15, CARPET: 16, TOWN_TREE: 17,
+  TOWN_EXIT: 18, STREAM: 19, TOWN_BRIDGE: 20, FOUNTAIN: 21,
+  WELL: 22, FENCE: 23, GARDEN: 24, SIGN: 25,
+  ROOF: 26, INN_BED: 27, BOOKSHELF: 28, TOWN_FLOWERS: 29,
+  DOCK: 30, STONE_CIRCLE: 31
 };
 const TILE_SIZE = 32;
 
@@ -10,7 +17,16 @@ const WALKABLE = {
   [TILE.GRASS]: true, [TILE.WATER]: false, [TILE.MOUNTAIN]: false,
   [TILE.TOWN]: true, [TILE.DENSE_FOREST]: false, [TILE.TREES]: true,
   [TILE.PATH]: true, [TILE.SAND]: true, [TILE.BRIDGE]: true,
-  [TILE.FLOWERS]: true
+  [TILE.FLOWERS]: true,
+  // Town interior walkability
+  [TILE.COBBLE]: true, [TILE.WOOD_FLOOR]: true, [TILE.WALL]: false,
+  [TILE.WALL_TOP]: false, [TILE.COUNTER]: false, [TILE.DOOR]: true,
+  [TILE.CARPET]: true, [TILE.TOWN_TREE]: false, [TILE.TOWN_EXIT]: true,
+  [TILE.STREAM]: false, [TILE.TOWN_BRIDGE]: true, [TILE.FOUNTAIN]: false,
+  [TILE.WELL]: false, [TILE.FENCE]: false, [TILE.GARDEN]: false,
+  [TILE.SIGN]: false, [TILE.ROOF]: false, [TILE.INN_BED]: false,
+  [TILE.BOOKSHELF]: false, [TILE.TOWN_FLOWERS]: true, [TILE.DOCK]: true,
+  [TILE.STONE_CIRCLE]: false
 };
 
 // Seeded hash for deterministic randomness
@@ -271,12 +287,24 @@ const MAP_COLS = MAP_DATA[0].length;
 const MAP_ROWS = MAP_DATA.length;
 
 function getTile(x, y) {
+  // Use active map when inside a town or building
+  if (typeof ACTIVE_MAP !== 'undefined' && ACTIVE_MAP) {
+    if (x < 0 || y < 0 || x >= ACTIVE_COLS || y >= ACTIVE_ROWS) return TILE.WALL;
+    return ACTIVE_MAP[y][x];
+  }
   if (x < 0 || y < 0 || x >= MAP_COLS || y >= MAP_ROWS) return TILE.WATER;
   return MAP_DATA[y][x];
 }
 
 function isWalkable(x, y) {
-  return WALKABLE[getTile(x, y)] === true;
+  if (WALKABLE[getTile(x, y)] !== true) return false;
+  // Check NPC collision
+  if (typeof ACTIVE_NPCS !== 'undefined' && ACTIVE_NPCS) {
+    for (const npc of ACTIVE_NPCS) {
+      if (npc.x === x && npc.y === y) return false;
+    }
+  }
+  return true;
 }
 
 // Find a SAND tile adjacent to WATER near the target coordinate

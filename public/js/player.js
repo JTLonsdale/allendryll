@@ -71,14 +71,16 @@ function movePlayer(dx, dy) {
       return true;
     }
   }
-  return false; // blocked
+  return false;
 }
 
 function getPlayerState() {
   return {
-    x: player.x, y: player.y, gold: player.gold, items: player.items,
-    party: player.party, direction: player.direction,
-    ship: { x: ship.x, y: ship.y, boarded: ship.boarded }
+    x: player.x, y: player.y, gold: player.gold,
+    items: player.items, party: player.party,
+    direction: player.direction,
+    ship: { x: ship.x, y: ship.y, boarded: ship.boarded },
+    location: typeof getLocationState === 'function' ? getLocationState() : null
   };
 }
 
@@ -93,5 +95,8 @@ function loadPlayerState(state) {
     ship.x = state.ship.x;
     ship.y = state.ship.y;
     ship.boarded = state.ship.boarded;
+  }
+  if (state.location && typeof loadLocationState === 'function') {
+    loadLocationState(state.location);
   }
 }

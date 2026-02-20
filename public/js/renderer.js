@@ -85,6 +85,29 @@ const Renderer = {
     this._buildBridgeTile();
     this._buildFlowerTile();
     this._buildShipTile();
+    // Town interior tiles
+    this._buildCobbleTile();
+    this._buildWoodFloorTile();
+    this._buildWallTile();
+    this._buildWallTopTile();
+    this._buildCounterTile();
+    this._buildDoorTile();
+    this._buildCarpetTile();
+    this._buildTownTreeTile();
+    this._buildTownExitTile();
+    this._buildStreamTiles();
+    this._buildTownBridgeTile();
+    this._buildFountainTile();
+    this._buildWellTile();
+    this._buildFenceTile();
+    this._buildGardenTile();
+    this._buildSignTile();
+    this._buildRoofTile();
+    this._buildInnBedTile();
+    this._buildBookshelfTile();
+    this._buildTownFlowersTile();
+    this._buildDockTile();
+    this._buildStoneCircleTile();
   },
 
   _makeTile() {
@@ -512,6 +535,437 @@ const Renderer = {
     this.tileCache['proc_ship_0'] = canvas;
   },
 
+  // === Town interior tile builders ===
+
+  _buildCobbleTile() {
+    for (let v = 0; v < 2; v++) {
+      const { canvas, ctx } = this._makeTile();
+      const S = TILE_SIZE;
+      ctx.fillStyle = v === 0 ? '#9a8a7a' : '#a09080';
+      ctx.fillRect(0, 0, S, S);
+      ctx.strokeStyle = 'rgba(60,50,40,0.3)';
+      ctx.lineWidth = 0.5;
+      for (let r = 0; r < 4; r++) {
+        for (let c = 0; c < 4; c++) {
+          const ox = r % 2 === 0 ? 0 : 4;
+          ctx.strokeRect(c * 8 + ox, r * 8, 8, 8);
+        }
+      }
+      ctx.fillStyle = 'rgba(80,70,60,0.1)';
+      ctx.fillRect((v * 7) % S, (v * 13) % S, 3, 2);
+      this.tileCache[`proc_cobble_${v}`] = canvas;
+    }
+  },
+
+  _buildWoodFloorTile() {
+    const { canvas, ctx } = this._makeTile();
+    const S = TILE_SIZE;
+    ctx.fillStyle = '#c49a6c';
+    ctx.fillRect(0, 0, S, S);
+    ctx.strokeStyle = '#a07840';
+    ctx.lineWidth = 1;
+    for (let py = 0; py < S; py += 8) {
+      ctx.beginPath(); ctx.moveTo(0, py); ctx.lineTo(S, py); ctx.stroke();
+    }
+    ctx.strokeStyle = 'rgba(100,70,30,0.15)';
+    ctx.lineWidth = 0.5;
+    ctx.beginPath(); ctx.moveTo(10, 0); ctx.lineTo(10, S); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(22, 0); ctx.lineTo(22, S); ctx.stroke();
+    this.tileCache['proc_woodfloor_0'] = canvas;
+  },
+
+  _buildWallTile() {
+    const { canvas, ctx } = this._makeTile();
+    const S = TILE_SIZE;
+    ctx.fillStyle = '#6a6a70';
+    ctx.fillRect(0, 0, S, S);
+    ctx.strokeStyle = 'rgba(40,40,45,0.4)';
+    ctx.lineWidth = 0.5;
+    for (let r = 0; r < 4; r++) {
+      for (let c = 0; c < 3; c++) {
+        const ox = r % 2 === 0 ? 0 : 5;
+        ctx.strokeRect(c * 11 + ox, r * 8, 11, 8);
+      }
+    }
+    ctx.fillStyle = 'rgba(80,80,90,0.3)';
+    ctx.fillRect(0, 0, S, 2);
+    this.tileCache['proc_wall_0'] = canvas;
+  },
+
+  _buildWallTopTile() {
+    const { canvas, ctx } = this._makeTile();
+    const S = TILE_SIZE;
+    ctx.fillStyle = '#5a5a60';
+    ctx.fillRect(0, 0, S, S);
+    ctx.fillStyle = '#4a4a50';
+    ctx.fillRect(0, S - 6, S, 6);
+    ctx.strokeStyle = 'rgba(30,30,35,0.5)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(0, S - 6); ctx.lineTo(S, S - 6); ctx.stroke();
+    this.tileCache['proc_walltop_0'] = canvas;
+  },
+
+  _buildCounterTile() {
+    const { canvas, ctx } = this._makeTile();
+    const S = TILE_SIZE;
+    ctx.fillStyle = '#c49a6c';
+    ctx.fillRect(0, 0, S, S);
+    ctx.fillStyle = '#8b6935';
+    ctx.fillRect(0, 0, S, S);
+    ctx.fillStyle = '#a07840';
+    ctx.fillRect(2, 2, S - 4, S - 4);
+    ctx.strokeStyle = '#6b4423';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(2, 2, S - 4, S - 4);
+    ctx.fillStyle = 'rgba(200,180,140,0.3)';
+    ctx.fillRect(4, 4, S - 8, 3);
+    this.tileCache['proc_counter_0'] = canvas;
+  },
+
+  _buildDoorTile() {
+    const { canvas, ctx } = this._makeTile();
+    const S = TILE_SIZE;
+    ctx.fillStyle = '#9a8a7a';
+    ctx.fillRect(0, 0, S, S);
+    ctx.fillStyle = '#7a5a2a';
+    ctx.fillRect(6, 2, S - 12, S - 2);
+    ctx.strokeStyle = '#5a3a18';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(6, 2, S - 12, S - 2);
+    ctx.fillStyle = '#ffd700';
+    ctx.beginPath();
+    ctx.arc(S - 10, S / 2, 2, 0, Math.PI * 2);
+    ctx.fill();
+    this.tileCache['proc_door_0'] = canvas;
+  },
+
+  _buildCarpetTile() {
+    for (let v = 0; v < 2; v++) {
+      const { canvas, ctx } = this._makeTile();
+      const S = TILE_SIZE;
+      ctx.fillStyle = v === 0 ? '#8b2252' : '#6b3a6b';
+      ctx.fillRect(0, 0, S, S);
+      ctx.fillStyle = v === 0 ? '#a03060' : '#7a4a7a';
+      ctx.fillRect(3, 3, S - 6, S - 6);
+      ctx.strokeStyle = '#ffd700';
+      ctx.lineWidth = 0.5;
+      ctx.strokeRect(5, 5, S - 10, S - 10);
+      this.tileCache[`proc_carpet_${v}`] = canvas;
+    }
+  },
+
+  _buildTownTreeTile() {
+    for (let v = 0; v < 2; v++) {
+      const { canvas, ctx } = this._makeTile();
+      const S = TILE_SIZE;
+      ctx.fillStyle = '#9a8a7a';
+      ctx.fillRect(0, 0, S, S);
+      ctx.strokeStyle = 'rgba(60,50,40,0.3)';
+      ctx.lineWidth = 0.5;
+      for (let r = 0; r < 4; r++) {
+        for (let c = 0; c < 4; c++) {
+          ctx.strokeRect(c * 8 + (r % 2 === 0 ? 0 : 4), r * 8, 8, 8);
+        }
+      }
+      ctx.fillStyle = '#7a5a2a';
+      ctx.fillRect(S / 2 - 2, 16, 4, 16);
+      const colors = v === 0 ? ['#2d7a28', '#3a8a35'] : ['#4a9a40', '#5aaa50'];
+      ctx.fillStyle = colors[0];
+      ctx.beginPath(); ctx.arc(S / 2, 12, 10, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = colors[1];
+      ctx.beginPath(); ctx.arc(S / 2 - 3, 10, 6, 0, Math.PI * 2); ctx.fill();
+      this.tileCache[`proc_towntree_${v}`] = canvas;
+    }
+  },
+
+  _buildTownExitTile() {
+    const { canvas, ctx } = this._makeTile();
+    const S = TILE_SIZE;
+    ctx.fillStyle = '#9a8a7a';
+    ctx.fillRect(0, 0, S, S);
+    ctx.fillStyle = 'rgba(74,140,63,0.3)';
+    ctx.fillRect(0, 0, S, S);
+    ctx.strokeStyle = 'rgba(60,50,40,0.3)';
+    ctx.lineWidth = 0.5;
+    for (let r = 0; r < 4; r++) {
+      for (let c = 0; c < 4; c++) {
+        ctx.strokeRect(c * 8 + (r % 2 === 0 ? 0 : 4), r * 8, 8, 8);
+      }
+    }
+    ctx.fillStyle = 'rgba(0,150,0,0.2)';
+    ctx.beginPath();
+    ctx.moveTo(S / 2 - 6, S - 4);
+    ctx.lineTo(S / 2, S - 12);
+    ctx.lineTo(S / 2 + 6, S - 4);
+    ctx.closePath();
+    ctx.fill();
+    this.tileCache['proc_townexit_0'] = canvas;
+  },
+
+  _buildStreamTiles() {
+    for (let f = 0; f < 4; f++) {
+      const { canvas, ctx } = this._makeTile();
+      const S = TILE_SIZE;
+      ctx.fillStyle = '#2a7ab4';
+      ctx.fillRect(0, 0, S, S);
+      ctx.strokeStyle = 'rgba(100,200,255,0.4)';
+      ctx.lineWidth = 1.5;
+      for (let w = 0; w < 3; w++) {
+        const wy = 4 + w * 10 + f * 2;
+        ctx.beginPath();
+        ctx.moveTo(0, wy);
+        ctx.quadraticCurveTo(8, wy - 2, 16, wy);
+        ctx.quadraticCurveTo(24, wy + 2, S, wy);
+        ctx.stroke();
+      }
+      ctx.fillStyle = 'rgba(180,230,255,0.3)';
+      ctx.fillRect((f * 9) % (S - 2), (f * 5 + 3) % (S - 2), 2, 2);
+      this.tileCache[`proc_stream_${f}`] = canvas;
+    }
+  },
+
+  _buildTownBridgeTile() {
+    const { canvas, ctx } = this._makeTile();
+    const S = TILE_SIZE;
+    ctx.fillStyle = '#2a7ab4';
+    ctx.fillRect(0, 0, S, S);
+    ctx.fillStyle = '#a07840';
+    ctx.fillRect(0, 4, S, S - 8);
+    ctx.strokeStyle = '#806030';
+    ctx.lineWidth = 1;
+    for (let px = 0; px < S; px += 6) {
+      ctx.beginPath(); ctx.moveTo(px, 4); ctx.lineTo(px, S - 4); ctx.stroke();
+    }
+    ctx.fillStyle = '#785828';
+    ctx.fillRect(0, 3, S, 2);
+    ctx.fillRect(0, S - 5, S, 2);
+    this.tileCache['proc_townbridge_0'] = canvas;
+  },
+
+  _buildFountainTile() {
+    for (let f = 0; f < 4; f++) {
+      const { canvas, ctx } = this._makeTile();
+      const S = TILE_SIZE;
+      ctx.fillStyle = '#9a8a7a';
+      ctx.fillRect(0, 0, S, S);
+      ctx.fillStyle = '#7a7a80';
+      ctx.beginPath(); ctx.arc(S / 2, S / 2, 12, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#3a8ac4';
+      ctx.beginPath(); ctx.arc(S / 2, S / 2, 9, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#6a6a70';
+      ctx.beginPath(); ctx.arc(S / 2, S / 2, 4, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = 'rgba(150,210,255,0.6)';
+      const spray = 3 + f;
+      ctx.fillRect(S / 2 - 1, S / 2 - spray, 2, spray);
+      ctx.fillStyle = 'rgba(200,230,255,0.5)';
+      ctx.fillRect(S / 2 - 2 - f, S / 2 - 1, 1, 1);
+      ctx.fillRect(S / 2 + 2 + f, S / 2 - 1, 1, 1);
+      this.tileCache[`proc_fountain_${f}`] = canvas;
+    }
+  },
+
+  _buildWellTile() {
+    const { canvas, ctx } = this._makeTile();
+    const S = TILE_SIZE;
+    ctx.fillStyle = '#9a8a7a';
+    ctx.fillRect(0, 0, S, S);
+    ctx.fillStyle = '#6a6a70';
+    ctx.beginPath(); ctx.arc(S / 2, S / 2 + 2, 10, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#1a3a5a';
+    ctx.beginPath(); ctx.arc(S / 2, S / 2 + 2, 7, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#5a3a18';
+    ctx.fillRect(S / 2 - 1, S / 2 - 10, 2, 10);
+    ctx.fillRect(S / 2 - 6, S / 2 - 10, 12, 2);
+    this.tileCache['proc_well_0'] = canvas;
+  },
+
+  _buildFenceTile() {
+    const { canvas, ctx } = this._makeTile();
+    const S = TILE_SIZE;
+    ctx.fillStyle = '#9a8a7a';
+    ctx.fillRect(0, 0, S, S);
+    ctx.strokeStyle = 'rgba(60,50,40,0.3)';
+    ctx.lineWidth = 0.5;
+    for (let r = 0; r < 4; r++) {
+      for (let c = 0; c < 4; c++) {
+        ctx.strokeRect(c * 8 + (r % 2 === 0 ? 0 : 4), r * 8, 8, 8);
+      }
+    }
+    ctx.fillStyle = '#8b6935';
+    ctx.fillRect(2, 10, 3, 18);
+    ctx.fillRect(S - 5, 10, 3, 18);
+    ctx.fillRect(S / 2 - 1, 10, 3, 18);
+    ctx.fillStyle = '#a07840';
+    ctx.fillRect(0, 12, S, 3);
+    ctx.fillRect(0, 22, S, 3);
+    this.tileCache['proc_fence_0'] = canvas;
+  },
+
+  _buildGardenTile() {
+    const { canvas, ctx } = this._makeTile();
+    const S = TILE_SIZE;
+    ctx.fillStyle = '#5a3a18';
+    ctx.fillRect(0, 0, S, S);
+    ctx.fillStyle = '#3a6a25';
+    for (let r = 0; r < 4; r++) {
+      ctx.fillRect(2, r * 8 + 1, S - 4, 4);
+    }
+    ctx.fillStyle = '#d44';
+    ctx.fillRect(6, 2, 3, 3);
+    ctx.fillRect(20, 10, 3, 3);
+    ctx.fillStyle = '#fa0';
+    ctx.fillRect(14, 18, 3, 3);
+    this.tileCache['proc_garden_0'] = canvas;
+  },
+
+  _buildSignTile() {
+    const { canvas, ctx } = this._makeTile();
+    const S = TILE_SIZE;
+    ctx.fillStyle = '#9a8a7a';
+    ctx.fillRect(0, 0, S, S);
+    ctx.strokeStyle = 'rgba(60,50,40,0.3)';
+    ctx.lineWidth = 0.5;
+    for (let r = 0; r < 4; r++) {
+      for (let c = 0; c < 4; c++) {
+        ctx.strokeRect(c * 8 + (r % 2 === 0 ? 0 : 4), r * 8, 8, 8);
+      }
+    }
+    ctx.fillStyle = '#5a3a18';
+    ctx.fillRect(S / 2 - 1, 14, 3, 18);
+    ctx.fillStyle = '#a07840';
+    ctx.fillRect(S / 2 - 8, 6, 16, 10);
+    ctx.strokeStyle = '#6b4423';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(S / 2 - 8, 6, 16, 10);
+    ctx.fillStyle = '#333';
+    ctx.font = '6px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('INFO', S / 2, 14);
+    this.tileCache['proc_sign_0'] = canvas;
+  },
+
+  _buildRoofTile() {
+    for (let v = 0; v < 2; v++) {
+      const { canvas, ctx } = this._makeTile();
+      const S = TILE_SIZE;
+      ctx.fillStyle = v === 0 ? '#b04030' : '#386838';
+      ctx.fillRect(0, 0, S, S);
+      ctx.strokeStyle = v === 0 ? '#903020' : '#285028';
+      ctx.lineWidth = 1;
+      for (let py = 0; py < S; py += 6) {
+        ctx.beginPath(); ctx.moveTo(0, py); ctx.lineTo(S, py); ctx.stroke();
+      }
+      ctx.fillStyle = v === 0 ? 'rgba(180,80,60,0.3)' : 'rgba(60,120,60,0.3)';
+      for (let py = 0; py < S; py += 6) {
+        for (let px = (py / 6 % 2) * 8; px < S; px += 16) {
+          ctx.fillRect(px, py, 8, 6);
+        }
+      }
+      this.tileCache[`proc_roof_${v}`] = canvas;
+    }
+  },
+
+  _buildInnBedTile() {
+    const { canvas, ctx } = this._makeTile();
+    const S = TILE_SIZE;
+    ctx.fillStyle = '#c49a6c';
+    ctx.fillRect(0, 0, S, S);
+    ctx.fillStyle = '#5a3a18';
+    ctx.fillRect(4, 4, S - 8, S - 6);
+    ctx.fillStyle = '#eee8d8';
+    ctx.fillRect(6, 6, S - 12, S - 12);
+    ctx.fillStyle = '#8b2252';
+    ctx.fillRect(6, S - 12, S - 12, 8);
+    ctx.fillStyle = '#e0d0b0';
+    ctx.fillRect(8, 4, 8, 6);
+    this.tileCache['proc_innbed_0'] = canvas;
+  },
+
+  _buildBookshelfTile() {
+    const { canvas, ctx } = this._makeTile();
+    const S = TILE_SIZE;
+    ctx.fillStyle = '#5a3a18';
+    ctx.fillRect(0, 0, S, S);
+    ctx.fillStyle = '#7a5a2a';
+    ctx.fillRect(2, 0, S - 4, S);
+    const colors = ['#c22', '#28c', '#2a2', '#cc2', '#c2c', '#2cc', '#a52', '#55a'];
+    for (let row = 0; row < 4; row++) {
+      const sy = row * 8;
+      ctx.fillStyle = '#6b4423';
+      ctx.fillRect(2, sy + 7, S - 4, 1);
+      for (let b = 0; b < 5; b++) {
+        ctx.fillStyle = colors[(row * 5 + b) % colors.length];
+        ctx.fillRect(4 + b * 5, sy + 1, 4, 6);
+      }
+    }
+    this.tileCache['proc_bookshelf_0'] = canvas;
+  },
+
+  _buildTownFlowersTile() {
+    const { canvas, ctx } = this._makeTile();
+    const S = TILE_SIZE;
+    ctx.fillStyle = '#9a8a7a';
+    ctx.fillRect(0, 0, S, S);
+    ctx.strokeStyle = 'rgba(60,50,40,0.3)';
+    ctx.lineWidth = 0.5;
+    for (let r = 0; r < 4; r++) {
+      for (let c = 0; c < 4; c++) {
+        ctx.strokeRect(c * 8 + (r % 2 === 0 ? 0 : 4), r * 8, 8, 8);
+      }
+    }
+    const flowerColors = ['#ff6b8a', '#ffaa44', '#aa66ff', '#44ccff', '#ffee44'];
+    for (let i = 0; i < 5; i++) {
+      ctx.fillStyle = flowerColors[i];
+      const fx = (i * 11 + 3) % (S - 4);
+      const fy = (i * 7 + 5) % (S - 4);
+      ctx.beginPath(); ctx.arc(fx + 2, fy + 2, 2, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#ffee88';
+      ctx.fillRect(fx + 1, fy + 1, 2, 2);
+    }
+    this.tileCache['proc_townflowers_0'] = canvas;
+  },
+
+  _buildDockTile() {
+    const { canvas, ctx } = this._makeTile();
+    const S = TILE_SIZE;
+    ctx.fillStyle = '#1a5c94';
+    ctx.fillRect(0, 0, S, S);
+    ctx.fillStyle = '#a07840';
+    ctx.fillRect(0, 0, S, S);
+    ctx.strokeStyle = '#806030';
+    ctx.lineWidth = 1;
+    for (let py = 0; py < S; py += 6) {
+      ctx.beginPath(); ctx.moveTo(0, py); ctx.lineTo(S, py); ctx.stroke();
+    }
+    ctx.strokeStyle = 'rgba(100,70,30,0.2)';
+    ctx.lineWidth = 0.5;
+    ctx.beginPath(); ctx.moveTo(8, 0); ctx.lineTo(8, S); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(24, 0); ctx.lineTo(24, S); ctx.stroke();
+    this.tileCache['proc_dock_0'] = canvas;
+  },
+
+  _buildStoneCircleTile() {
+    const { canvas, ctx } = this._makeTile();
+    const S = TILE_SIZE;
+    ctx.fillStyle = '#4a8c3f';
+    ctx.fillRect(0, 0, S, S);
+    ctx.fillStyle = '#7a7a80';
+    ctx.fillRect(S / 2 - 5, 4, 10, 24);
+    ctx.fillStyle = '#8a8a90';
+    ctx.fillRect(S / 2 - 4, 5, 8, 22);
+    ctx.fillStyle = 'rgba(150,150,200,0.2)';
+    ctx.fillRect(S / 2 - 3, 6, 3, 20);
+    ctx.strokeStyle = 'rgba(60,60,80,0.3)';
+    ctx.lineWidth = 0.5;
+    ctx.beginPath();
+    ctx.moveTo(S / 2 - 2, 10);
+    ctx.lineTo(S / 2 + 2, 14);
+    ctx.moveTo(S / 2 + 1, 18);
+    ctx.lineTo(S / 2 - 1, 22);
+    ctx.stroke();
+    this.tileCache['proc_stonecircle_0'] = canvas;
+  },
+
   // Get the correct cached tile canvas for a tile type at position (x,y)
   getTileCached(type, x, y) {
     const h = (x * 31 + y * 17) & 0xffff; // cheap variant hash
@@ -544,6 +998,29 @@ const Renderer = {
       case TILE.SAND:     return this.tileCache[`proc_sand_${h % 2}`];
       case TILE.BRIDGE:   return this.tileCache['proc_bridge_0'];
       case TILE.FLOWERS:  return this.tileCache[`proc_flowers_${h % 2}`];
+      // Town interior tiles
+      case TILE.COBBLE:       return this.tileCache[`proc_cobble_${h % 2}`];
+      case TILE.WOOD_FLOOR:   return this.tileCache['proc_woodfloor_0'];
+      case TILE.WALL:         return this.tileCache['proc_wall_0'];
+      case TILE.WALL_TOP:     return this.tileCache['proc_walltop_0'];
+      case TILE.COUNTER:      return this.tileCache['proc_counter_0'];
+      case TILE.DOOR:         return this.tileCache['proc_door_0'];
+      case TILE.CARPET:       return this.tileCache[`proc_carpet_${h % 2}`];
+      case TILE.TOWN_TREE:    return this.tileCache[`proc_towntree_${h % 2}`];
+      case TILE.TOWN_EXIT:    return this.tileCache['proc_townexit_0'];
+      case TILE.STREAM:       return null; // animated
+      case TILE.TOWN_BRIDGE:  return this.tileCache['proc_townbridge_0'];
+      case TILE.FOUNTAIN:     return null; // animated
+      case TILE.WELL:         return this.tileCache['proc_well_0'];
+      case TILE.FENCE:        return this.tileCache['proc_fence_0'];
+      case TILE.GARDEN:       return this.tileCache['proc_garden_0'];
+      case TILE.SIGN:         return this.tileCache['proc_sign_0'];
+      case TILE.ROOF:         return this.tileCache[`proc_roof_${h % 2}`];
+      case TILE.INN_BED:      return this.tileCache['proc_innbed_0'];
+      case TILE.BOOKSHELF:    return this.tileCache['proc_bookshelf_0'];
+      case TILE.TOWN_FLOWERS: return this.tileCache['proc_townflowers_0'];
+      case TILE.DOCK:         return this.tileCache['proc_dock_0'];
+      case TILE.STONE_CIRCLE: return this.tileCache['proc_stonecircle_0'];
     }
     return null;
   },
@@ -556,20 +1033,42 @@ const Renderer = {
   drawMap() {
     const ctx = this.ctx;
     this.frameCount++;
-    const waterFrameIdx = Math.floor(this.frameCount / 20) % 4;
+    const animFrame = Math.floor(this.frameCount / 20) % 4;
+
+    // Determine map dimensions
+    const cols = ACTIVE_MAP ? ACTIVE_COLS : MAP_COLS;
+    const rows = ACTIVE_MAP ? ACTIVE_ROWS : MAP_ROWS;
 
     // Camera offset to center player on screen
-    const camX = player.x * TILE_SIZE - this.canvas.width / 2 + TILE_SIZE / 2;
-    const camY = player.y * TILE_SIZE - this.canvas.height / 2 + TILE_SIZE / 2;
+    let camX = player.x * TILE_SIZE - this.canvas.width / 2 + TILE_SIZE / 2;
+    let camY = player.y * TILE_SIZE - this.canvas.height / 2 + TILE_SIZE / 2;
+
+    // Clamp camera for small maps
+    const mapPixelW = cols * TILE_SIZE;
+    const mapPixelH = rows * TILE_SIZE;
+    if (mapPixelW <= this.canvas.width) {
+      camX = (mapPixelW - this.canvas.width) / 2;
+    } else {
+      camX = Math.max(0, Math.min(camX, mapPixelW - this.canvas.width));
+    }
+    if (mapPixelH <= this.canvas.height) {
+      camY = (mapPixelH - this.canvas.height) / 2;
+    } else {
+      camY = Math.max(0, Math.min(camY, mapPixelH - this.canvas.height));
+    }
 
     const startCol = Math.max(0, Math.floor(camX / TILE_SIZE));
     const startRow = Math.max(0, Math.floor(camY / TILE_SIZE));
-    const endCol = Math.min(MAP_COLS, startCol + Math.ceil(this.canvas.width / TILE_SIZE) + 2);
-    const endRow = Math.min(MAP_ROWS, startRow + Math.ceil(this.canvas.height / TILE_SIZE) + 2);
+    const endCol = Math.min(cols, startCol + Math.ceil(this.canvas.width / TILE_SIZE) + 2);
+    const endRow = Math.min(rows, startRow + Math.ceil(this.canvas.height / TILE_SIZE) + 2);
 
-    // Fill areas outside map with deep ocean
-    ctx.fillStyle = '#0a3a6a';
+    // Fill background
+    ctx.fillStyle = ACTIVE_MAP ? '#111' : '#0a3a6a';
     ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+    // Store camera for player/NPC drawing
+    this._camX = camX;
+    this._camY = camY;
 
     for (let r = startRow; r < endRow; r++) {
       for (let c = startCol; c < endCol; c++) {
@@ -577,18 +1076,20 @@ const Renderer = {
         const dx = Math.floor(c * TILE_SIZE - camX);
         const dy = Math.floor(r * TILE_SIZE - camY);
 
-        if (tile === TILE.WATER) {
-          // Animated water tile
-          const waterKey = this.tileset
-            ? 'sprite_water_0'
-            : `proc_water_${waterFrameIdx}`;
-          const cached = this.tileCache[waterKey];
-          if (cached) {
-            ctx.drawImage(cached, dx, dy);
-          } else {
-            ctx.fillStyle = '#1a5c94';
-            ctx.fillRect(dx, dy, TILE_SIZE, TILE_SIZE);
-          }
+        // Animated tiles
+        if (tile === TILE.WATER || tile === TILE.STREAM) {
+          const key = tile === TILE.WATER
+            ? (this.tileset ? 'sprite_water_0' : `proc_water_${animFrame}`)
+            : `proc_stream_${animFrame}`;
+          const cached = this.tileCache[key];
+          if (cached) { ctx.drawImage(cached, dx, dy); }
+          else { ctx.fillStyle = '#1a5c94'; ctx.fillRect(dx, dy, TILE_SIZE, TILE_SIZE); }
+          continue;
+        }
+        if (tile === TILE.FOUNTAIN) {
+          const cached = this.tileCache[`proc_fountain_${animFrame}`];
+          if (cached) { ctx.drawImage(cached, dx, dy); }
+          else { ctx.fillStyle = '#3a8ac4'; ctx.fillRect(dx, dy, TILE_SIZE, TILE_SIZE); }
           continue;
         }
 
@@ -615,8 +1116,10 @@ const Renderer = {
 
   drawPlayer() {
     const ctx = this.ctx;
-    const px = this.canvas.width / 2 - TILE_SIZE / 2;
-    const py = this.canvas.height / 2 - TILE_SIZE / 2;
+    const camX = this._camX != null ? this._camX : player.x * TILE_SIZE - this.canvas.width / 2 + TILE_SIZE / 2;
+    const camY = this._camY != null ? this._camY : player.y * TILE_SIZE - this.canvas.height / 2 + TILE_SIZE / 2;
+    const px = Math.floor(player.x * TILE_SIZE - camX);
+    const py = Math.floor(player.y * TILE_SIZE - camY);
 
     if (ship.boarded) {
       // Draw ship tile under the princess
@@ -653,6 +1156,201 @@ const Renderer = {
       ctx.fillRect(px + 9, py + 24 + yOff, 5, 6);
       ctx.fillRect(px + 18, py + 24 + yOff, 5, 6);
     }
+  },
+
+  // NPC sprite palettes by type
+  NPC_PALETTES: {
+    elder:    { body: '#6a5acd', hair: '#ccc', skin: '#ffeaa7' },
+    merchant: { body: '#d4a017', hair: '#8b4513', skin: '#ffeaa7' },
+    soldier:  { body: '#4a6a8a', hair: '#333', skin: '#ffeaa7' },
+    child:    { body: '#50c878', hair: '#fdcb6e', skin: '#ffeaa7' },
+    druid:    { body: '#2e8b57', hair: '#556b2f', skin: '#deb887' },
+    sailor:   { body: '#2a6aaa', hair: '#444', skin: '#ffeaa7' },
+  },
+
+  drawNPCs() {
+    if (!ACTIVE_NPCS || ACTIVE_NPCS.length === 0) return;
+    const ctx = this.ctx;
+    const camX = this._camX != null ? this._camX : 0;
+    const camY = this._camY != null ? this._camY : 0;
+
+    for (const npc of ACTIVE_NPCS) {
+      const sx = Math.floor(npc.x * TILE_SIZE - camX);
+      const sy = Math.floor(npc.y * TILE_SIZE - camY);
+
+      // Skip if off screen
+      if (sx < -TILE_SIZE || sx > this.canvas.width || sy < -TILE_SIZE || sy > this.canvas.height) continue;
+
+      const pal = this.NPC_PALETTES[npc.sprite] || this.NPC_PALETTES.elder;
+
+      // Body
+      ctx.fillStyle = pal.body;
+      ctx.fillRect(sx + 6, sy + 8, 20, 16);
+      // Head
+      ctx.fillStyle = pal.skin;
+      ctx.fillRect(sx + 9, sy + 1, 14, 12);
+      // Hair
+      ctx.fillStyle = pal.hair;
+      ctx.fillRect(sx + 7, sy + 0, 18, 5);
+      // Eyes
+      ctx.fillStyle = '#2d3436';
+      const eo = npc.direction === 'left' ? -2 : npc.direction === 'right' ? 2 : 0;
+      ctx.fillRect(sx + 12 + eo, sy + 5, 2, 2);
+      ctx.fillRect(sx + 18 + eo, sy + 5, 2, 2);
+      // Legs
+      ctx.fillStyle = pal.body;
+      ctx.fillRect(sx + 9, sy + 24, 5, 6);
+      ctx.fillRect(sx + 18, sy + 24, 5, 6);
+
+      // Shopkeeper indicator
+      if (npc.isShopkeeper) {
+        ctx.fillStyle = '#ffd700';
+        ctx.font = 'bold 10px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('$', sx + TILE_SIZE / 2, sy - 2);
+      }
+    }
+
+    // "!" indicator for facing NPC
+    if (typeof NPC !== 'undefined' && NPC.hasFacingNPC && NPC.hasFacingNPC()) {
+      const facing = NPC.getFacingNPC();
+      if (facing) {
+        const fx = Math.floor(facing.x * TILE_SIZE - camX);
+        const fy = Math.floor(facing.y * TILE_SIZE - camY);
+        ctx.fillStyle = '#ff0';
+        ctx.font = 'bold 14px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('!', fx + TILE_SIZE / 2, fy - 4);
+      }
+    }
+  },
+
+  drawDialogue() {
+    if (typeof NPC === 'undefined' || !NPC.active) return;
+    const ctx = this.ctx;
+    const w = this.canvas.width;
+    const h = this.canvas.height;
+
+    const boxH = 100;
+    const boxY = h - boxH - 10;
+    const boxX = 10;
+    const boxW = w - 20;
+
+    // Background
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
+    ctx.fillRect(boxX, boxY, boxW, boxH);
+    ctx.strokeStyle = '#ffd700';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(boxX, boxY, boxW, boxH);
+
+    // NPC name
+    ctx.fillStyle = '#ffd700';
+    ctx.font = 'bold 16px sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(NPC.getCurrentName(), boxX + 14, boxY + 24);
+
+    // Dialogue text
+    ctx.fillStyle = '#fff';
+    ctx.font = '15px sans-serif';
+    const line = NPC.getCurrentLine();
+    if (line) ctx.fillText(line, boxX + 14, boxY + 52);
+
+    // Prompt
+    ctx.fillStyle = '#aaa';
+    ctx.font = '12px sans-serif';
+    ctx.textAlign = 'right';
+    const isLast = NPC.dialogueIndex >= NPC.active.dialogue.length - 1;
+    ctx.fillText(isLast ? '[Enter to close]' : '[Enter to continue]', boxX + boxW - 14, boxY + boxH - 12);
+  },
+
+  drawShop() {
+    if (typeof Shop === 'undefined' || !Shop.active) return;
+    const ctx = this.ctx;
+    const w = this.canvas.width;
+    const h = this.canvas.height;
+
+    const panelW = 420;
+    const panelH = 340;
+    const px = (w - panelW) / 2;
+    const py = (h - panelH) / 2;
+
+    // Background
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
+    ctx.fillRect(px, py, panelW, panelH);
+    ctx.strokeStyle = '#ffd700';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(px, py, panelW, panelH);
+
+    // Title
+    ctx.fillStyle = '#ffd700';
+    ctx.font = 'bold 18px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(Shop.shopName, w / 2, py + 28);
+
+    // Gold
+    ctx.fillStyle = '#ffd700';
+    ctx.font = '14px sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText('Gold: ' + player.gold, px + panelW - 16, py + 28);
+
+    // Item list
+    ctx.textAlign = 'left';
+    const listX = px + 16;
+    const listY = py + 50;
+    const rowH = 26;
+    const maxVisible = 9;
+    const scrollOffset = Math.max(0, Shop.cursor - maxVisible + 1);
+
+    for (let i = 0; i < Math.min(Shop.items.length, maxVisible); i++) {
+      const idx = i + scrollOffset;
+      if (idx >= Shop.items.length) break;
+      const item = Shop.items[idx];
+      const iy = listY + i * rowH;
+      const isSelected = idx === Shop.cursor;
+
+      if (isSelected) {
+        ctx.fillStyle = 'rgba(255, 215, 0, 0.15)';
+        ctx.fillRect(listX - 4, iy - 4, panelW - 32, rowH);
+        ctx.fillStyle = '#ffd700';
+        ctx.font = 'bold 14px sans-serif';
+        ctx.fillText('>', listX, iy + 13);
+      }
+
+      ctx.fillStyle = isSelected ? '#fff' : '#ccc';
+      ctx.font = '14px sans-serif';
+      ctx.fillText(item.name, listX + 18, iy + 13);
+
+      ctx.fillStyle = player.gold >= item.price ? '#ffd700' : '#e74c3c';
+      ctx.textAlign = 'right';
+      ctx.fillText(item.price + 'G', px + panelW - 16, iy + 13);
+      ctx.textAlign = 'left';
+    }
+
+    // Selected item description
+    const sel = Shop.getSelectedItem();
+    if (sel) {
+      const descY = py + panelH - 50;
+      ctx.fillStyle = 'rgba(255,255,255,0.1)';
+      ctx.fillRect(px + 10, descY - 8, panelW - 20, 36);
+      ctx.fillStyle = '#aaa';
+      ctx.font = '13px sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText(sel.desc, px + 16, descY + 10);
+    }
+
+    // Shop message
+    if (Shop.message) {
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 14px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(Shop.message, w / 2, py + panelH - 14);
+    }
+
+    // Controls hint
+    ctx.fillStyle = '#666';
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Up/Down: Select   Enter: Buy   Escape: Close', w / 2, py + panelH + 16);
   },
 
   drawTitleScreen() {
