@@ -60,7 +60,7 @@ const HUD = {
       this._drawPrompt(ctx, canvas, 'Sailing - SPACE to dock');
     } else {
       const dist = Math.abs(player.x - ship.x) + Math.abs(player.y - ship.y);
-      if (dist <= 2) {
+      if (dist <= 1) {
         this._drawPrompt(ctx, canvas, 'Press SPACE to board ship');
       }
     }
@@ -84,5 +84,6 @@ const HUD = {
     ctx.font = '14px sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText(text, w / 2, by + 21);
+    ctx.textAlign = 'left';
   }
 };
