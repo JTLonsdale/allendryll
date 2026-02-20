@@ -1,5 +1,5 @@
 const Game = {
-  state: 'title', // title | naming | playing
+  state: 'title', // title | naming | playing | battle
   notification: null,
   notificationTimer: 0,
   nameIndex: 0,
@@ -32,6 +32,12 @@ const Game = {
   update() {
     if (this.notificationTimer > 0) this.notificationTimer--;
     if (this.notificationTimer === 0) this.notification = null;
+
+    // Battle system handles its own input
+    if (this.state === 'battle') {
+      Battle.update();
+      return;
+    }
 
     const key = Input.consume();
 
@@ -79,11 +85,19 @@ const Game = {
       return;
     }
 
-    // Movement from held keys
-    if (Input.keys['ArrowUp'])    { movePlayer(0, -1); this.moveDelay = 8; }
-    else if (Input.keys['ArrowDown'])  { movePlayer(0, 1);  this.moveDelay = 8; }
-    else if (Input.keys['ArrowLeft'])  { movePlayer(-1, 0); this.moveDelay = 8; }
-    else if (Input.keys['ArrowRight']) { movePlayer(1, 0);  this.moveDelay = 8; }
+    // Movement from held keys — check for random encounter after each step
+    let moved = false;
+    if (Input.keys['ArrowUp'])         { moved = movePlayer(0, -1); this.moveDelay = 8; }
+    else if (Input.keys['ArrowDown'])  { moved = movePlayer(0, 1);  this.moveDelay = 8; }
+    else if (Input.keys['ArrowLeft'])  { moved = movePlayer(-1, 0); this.moveDelay = 8; }
+    else if (Input.keys['ArrowRight']) { moved = movePlayer(1, 0);  this.moveDelay = 8; }
+
+    // Check for random encounter after a successful move
+    if (moved && checkRandomEncounter()) {
+      this.state = 'battle';
+      Battle.start();
+      return;
+    }
 
     // Save/Load
     if (key === 's' || key === 'S') {
@@ -105,6 +119,8 @@ const Game = {
       Renderer.drawMap();
       Renderer.drawPlayer();
       HUD.draw(Renderer.ctx, Renderer.canvas);
+    } else if (this.state === 'battle') {
+      Battle.render(Renderer.ctx, Renderer.canvas);
     }
 
     if (this.notification) {
