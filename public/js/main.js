@@ -1,26 +1,23 @@
 const Game = {
-  state: 'title', // title | naming | playing
+  state: 'title', // title | naming | recruiting | playing
   notification: null,
   notificationTimer: 0,
-  nameIndex: 0,
   editingName: null,
   partyNames: null,
   moveDelay: 0,
+  recruitingMember: null,
+  recruitingName: '',
 
   async init() {
     Renderer.init();
     Input.init();
-    this.partyNames = DEFAULT_PARTY.map(p => p.name);
-
-    // Use procedural tile rendering (rich hand-drawn tiles)
-    // Kenney spritesheet available at assets/Spritesheet/ but procedural looks better
-
+    this.partyNames = [DEFAULT_PARTY[0].name];
     this.loop();
   },
 
   showNotification(msg) {
     this.notification = msg;
-    this.notificationTimer = 120; // ~2 seconds at 60fps
+    this.notificationTimer = 120;
   },
 
   loop() {
@@ -39,6 +36,8 @@ const Game = {
       if (key === 'Enter') this.state = 'naming';
     } else if (this.state === 'naming') {
       this.updateNaming(key);
+    } else if (this.state === 'recruiting') {
+      this.updateRecruiting(key);
     } else if (this.state === 'playing') {
       this.updatePlaying(key);
     }
@@ -46,10 +45,9 @@ const Game = {
 
   updateNaming(key) {
     if (this.editingName !== null) {
-      // Currently editing a name
       if (key === 'Enter') {
         if (this.editingName.length > 0) {
-          this.partyNames[this.nameIndex] = this.editingName;
+          this.partyNames[0] = this.editingName;
         }
         this.editingName = null;
       } else if (key === 'Backspace') {
@@ -60,17 +58,54 @@ const Game = {
         this.editingName += key;
       }
     } else {
-      if (key === 'ArrowUp') this.nameIndex = (this.nameIndex + 4) % 5;
-      else if (key === 'ArrowDown') this.nameIndex = (this.nameIndex + 1) % 5;
-      else if (key === 'Enter') this.editingName = '';
+      if (key === 'Enter') this.editingName = '';
       else if (key === 'Escape') {
-        // Apply names and start game
-        for (let i = 0; i < 5; i++) {
-          player.party[i].name = this.partyNames[i];
-        }
+        player.party[0].name = this.partyNames[0];
         this.state = 'playing';
       }
     }
+  },
+
+  updateRecruiting(key) {
+    if (this.editingName !== null) {
+      if (key === 'Enter') {
+        if (this.editingName.length > 0) {
+          this.recruitingName = this.editingName;
+        }
+        this.editingName = null;
+      } else if (key === 'Backspace') {
+        this.editingName = this.editingName.slice(0, -1);
+      } else if (key === 'Escape') {
+        this.editingName = null;
+      } else if (key && key.length === 1 && this.editingName.length < 12) {
+        this.editingName += key;
+      }
+    } else {
+      if (key === 'Enter') this.editingName = '';
+      else if (key === 'Escape') {
+        this.recruitingMember.name = this.recruitingName;
+        player.party.push(this.recruitingMember);
+        this.showNotification(this.recruitingMember.name + ' joined the party!');
+        this.recruitingMember = null;
+        this.state = 'playing';
+      }
+    }
+  },
+
+  checkRecruitment() {
+    const townKey = getTownAt(player.x, player.y);
+    if (!townKey) return;
+
+    const template = TOWN_RECRUITMENT[townKey];
+    if (!template) return;
+
+    const alreadyRecruited = player.party.some(m => m.role === template.role);
+    if (alreadyRecruited) return;
+
+    this.recruitingMember = JSON.parse(JSON.stringify(template));
+    this.recruitingName = template.name;
+    this.editingName = null;
+    this.state = 'recruiting';
   },
 
   updatePlaying(key) {
@@ -79,13 +114,16 @@ const Game = {
       return;
     }
 
-    // Movement from held keys
-    if (Input.keys['ArrowUp'])    { movePlayer(0, -1); this.moveDelay = 8; }
-    else if (Input.keys['ArrowDown'])  { movePlayer(0, 1);  this.moveDelay = 8; }
-    else if (Input.keys['ArrowLeft'])  { movePlayer(-1, 0); this.moveDelay = 8; }
-    else if (Input.keys['ArrowRight']) { movePlayer(1, 0);  this.moveDelay = 8; }
+    let moved = false;
+    if (Input.keys['ArrowUp'])         { movePlayer(0, -1); this.moveDelay = 8; moved = true; }
+    else if (Input.keys['ArrowDown'])  { movePlayer(0, 1);  this.moveDelay = 8; moved = true; }
+    else if (Input.keys['ArrowLeft'])  { movePlayer(-1, 0); this.moveDelay = 8; moved = true; }
+    else if (Input.keys['ArrowRight']) { movePlayer(1, 0);  this.moveDelay = 8; moved = true; }
 
-    // Save/Load
+    if (moved) {
+      this.checkRecruitment();
+    }
+
     if (key === 's' || key === 'S') {
       Save.save().then(ok => this.showNotification(ok ? 'Game Saved!' : 'Save Failed!'));
     }
@@ -100,7 +138,9 @@ const Game = {
     if (this.state === 'title') {
       Renderer.drawTitleScreen();
     } else if (this.state === 'naming') {
-      Renderer.drawNameEntry(this.partyNames, this.nameIndex, this.editingName);
+      Renderer.drawNameEntry(this.partyNames, 0, this.editingName);
+    } else if (this.state === 'recruiting') {
+      Renderer.drawRecruitScreen(this.recruitingMember, this.recruitingName, this.editingName);
     } else if (this.state === 'playing') {
       Renderer.drawMap();
       Renderer.drawPlayer();

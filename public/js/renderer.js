@@ -646,17 +646,18 @@ const Renderer = {
     ctx.fillStyle = '#ffd700';
     ctx.font = 'bold 28px serif';
     ctx.textAlign = 'center';
-    ctx.fillText('Name Your Princesses', w / 2, 60);
+    ctx.fillText('Name Your Princess', w / 2, 60);
 
     ctx.font = '14px sans-serif';
     ctx.fillStyle = '#aaa';
-    ctx.fillText('Use UP/DOWN to select, ENTER to edit name, type new name + ENTER to confirm', w / 2, 95);
+    ctx.fillText('Press ENTER to edit name, type new name + ENTER to confirm', w / 2, 95);
 
-    const startY = 140;
+    // Center the entries vertically based on count
+    const count = partyNames.length;
     const rowH = 70;
-    const roles = ['Leader', 'Warrior', 'Mage', 'Healer', 'Ranger'];
+    const startY = h / 2 - (count * rowH) / 2;
 
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < count; i++) {
       const y = startY + i * rowH;
       const isSelected = i === selectedIndex;
 
@@ -673,7 +674,7 @@ const Renderer = {
       ctx.fillStyle = '#888';
       ctx.font = '13px sans-serif';
       ctx.textAlign = 'left';
-      ctx.fillText(roles[i], w / 2 - 180, y + 20);
+      ctx.fillText(DEFAULT_PARTY[i].role, w / 2 - 180, y + 20);
 
       // Name
       ctx.fillStyle = isSelected ? '#ffd700' : '#fff';
@@ -695,6 +696,103 @@ const Renderer = {
     ctx.font = '16px sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText('Press ESCAPE when done to begin your adventure!', w / 2, h - 40);
+  },
+
+  drawRecruitScreen(member, currentName, editingText) {
+    const ctx = this.ctx;
+    const w = this.canvas.width;
+    const h = this.canvas.height;
+
+    // Draw the map underneath for context
+    this.drawMap();
+    this.drawPlayer();
+
+    // Dark overlay
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+    ctx.fillRect(0, 0, w, h);
+
+    // Panel dimensions
+    const panelW = 460;
+    const panelH = 320;
+    const px = (w - panelW) / 2;
+    const py = (h - panelH) / 2;
+
+    // Panel background
+    ctx.fillStyle = '#1a0533';
+    ctx.fillRect(px, py, panelW, panelH);
+    ctx.strokeStyle = '#ffd700';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(px, py, panelW, panelH);
+
+    // Inner border
+    ctx.strokeStyle = '#e84393';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(px + 4, py + 4, panelW - 8, panelH - 8);
+
+    // Announcement
+    ctx.fillStyle = '#ffd700';
+    ctx.font = 'bold 24px serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('A New Ally Appears!', w / 2, py + 40);
+
+    // Role
+    ctx.fillStyle = '#e84393';
+    ctx.font = 'bold 18px sans-serif';
+    ctx.fillText(member.role, w / 2, py + 70);
+
+    // Name editing area
+    ctx.fillStyle = '#888';
+    ctx.font = '14px sans-serif';
+    ctx.fillText('Name:', w / 2, py + 105);
+
+    // Name box
+    const nameBoxW = 280;
+    const nameBoxH = 40;
+    const nameBoxX = (w - nameBoxW) / 2;
+    const nameBoxY = py + 115;
+    ctx.fillStyle = 'rgba(255,255,255,0.1)';
+    ctx.fillRect(nameBoxX, nameBoxY, nameBoxW, nameBoxH);
+    ctx.strokeStyle = editingText !== null ? '#ffd700' : '#e84393';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(nameBoxX, nameBoxY, nameBoxW, nameBoxH);
+
+    // Display name
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 22px serif';
+    const displayName = editingText !== null ? editingText + '_' : currentName;
+    ctx.fillText(displayName, w / 2, nameBoxY + 28);
+
+    // Stats
+    const statsY = nameBoxY + nameBoxH + 25;
+    ctx.font = '16px sans-serif';
+    ctx.fillStyle = '#aaa';
+
+    // HP
+    ctx.fillText('HP', w / 2 - 80, statsY);
+    ctx.fillStyle = '#333';
+    ctx.fillRect(w / 2 - 50, statsY - 12, 100, 14);
+    ctx.fillStyle = '#27ae60';
+    ctx.fillRect(w / 2 - 50, statsY - 12, 100 * (member.hp / member.maxHp), 14);
+    ctx.fillStyle = '#fff';
+    ctx.font = '12px sans-serif';
+    ctx.fillText(member.hp + '/' + member.maxHp, w / 2 + 65, statsY);
+
+    // MP
+    ctx.font = '16px sans-serif';
+    ctx.fillStyle = '#aaa';
+    ctx.fillText('MP', w / 2 - 80, statsY + 28);
+    ctx.fillStyle = '#333';
+    ctx.fillRect(w / 2 - 50, statsY + 16, 100, 14);
+    ctx.fillStyle = '#2980b9';
+    ctx.fillRect(w / 2 - 50, statsY + 16, 100 * (member.mp / member.maxMp), 14);
+    ctx.fillStyle = '#fff';
+    ctx.font = '12px sans-serif';
+    ctx.fillText(member.mp + '/' + member.maxMp, w / 2 + 65, statsY + 28);
+
+    // Instructions
+    ctx.fillStyle = '#aaa';
+    ctx.font = '14px sans-serif';
+    ctx.fillText('ENTER to edit name  |  ESCAPE to accept and recruit', w / 2, py + panelH - 20);
   },
 
   drawNotification(message) {

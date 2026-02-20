@@ -278,3 +278,21 @@ function getTile(x, y) {
 function isWalkable(x, y) {
   return WALKABLE[getTile(x, y)] === true;
 }
+
+// Town-to-princess recruitment mapping (excludes capital at 28,24 — that's Angeline's home)
+const TOWN_RECRUITMENT = {
+  '15,11': { name: 'Bathena',   role: 'Warrior', hp: 60, maxHp: 60, mp: 10, maxMp: 10 },
+  '48,11': { name: 'Bedalia',   role: 'Mage',    hp: 35, maxHp: 35, mp: 40, maxMp: 40 },
+  '13,38': { name: 'Banabelle', role: 'Healer',  hp: 40, maxHp: 40, mp: 35, maxMp: 35 },
+  '46,36': { name: 'Bedava',    role: 'Ranger',  hp: 45, maxHp: 45, mp: 15, maxMp: 15 },
+};
+
+function getTownAt(x, y) {
+  for (const key of Object.keys(TOWN_RECRUITMENT)) {
+    const [tx, ty] = key.split(',').map(Number);
+    if (Math.abs(x - tx) <= 1 && Math.abs(y - ty) <= 1) {
+      return key;
+    }
+  }
+  return null;
+}
