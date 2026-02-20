@@ -79,11 +79,12 @@ const Game = {
       return;
     }
 
-    // Movement from held keys
-    if (Input.keys['ArrowUp'])    { movePlayer(0, -1); this.moveDelay = 8; }
-    else if (Input.keys['ArrowDown'])  { movePlayer(0, 1);  this.moveDelay = 8; }
-    else if (Input.keys['ArrowLeft'])  { movePlayer(-1, 0); this.moveDelay = 8; }
-    else if (Input.keys['ArrowRight']) { movePlayer(1, 0);  this.moveDelay = 8; }
+    // Movement from held keys (faster when sailing)
+    const moveSpeed = ship.boarded ? 4 : 8;
+    if (Input.keys['ArrowUp'])    { movePlayer(0, -1); this.moveDelay = moveSpeed; }
+    else if (Input.keys['ArrowDown'])  { movePlayer(0, 1);  this.moveDelay = moveSpeed; }
+    else if (Input.keys['ArrowLeft'])  { movePlayer(-1, 0); this.moveDelay = moveSpeed; }
+    else if (Input.keys['ArrowRight']) { movePlayer(1, 0);  this.moveDelay = moveSpeed; }
 
     // Save/Load
     if (key === 's' || key === 'S') {
@@ -91,6 +92,42 @@ const Game = {
     }
     if (key === 'l' || key === 'L') {
       Save.load().then(ok => this.showNotification(ok ? 'Game Loaded!' : 'No Save Found!'));
+    }
+
+    // Ship boarding/docking
+    if (key === ' ') {
+      if (!ship.boarded) {
+        // Board the ship if adjacent (Manhattan distance <= 1)
+        const dist = Math.abs(player.x - ship.x) + Math.abs(player.y - ship.y);
+        if (dist <= 1) {
+          player.x = ship.x;
+          player.y = ship.y;
+          ship.boarded = true;
+          this.showNotification('Boarded the ship!');
+        }
+      } else {
+        // Dock: find adjacent walkable land tile
+        const landTiles = [TILE.SAND, TILE.GRASS, TILE.PATH, TILE.TOWN, TILE.BRIDGE, TILE.FLOWERS];
+        const dirs = [[0,-1],[0,1],[-1,0],[1,0]];
+        let docked = false;
+        for (const [ddx, ddy] of dirs) {
+          const lx = player.x + ddx;
+          const ly = player.y + ddy;
+          if (lx < 0 || ly < 0 || lx >= MAP_COLS || ly >= MAP_ROWS) continue;
+          const tile = getTile(lx, ly);
+          if (landTiles.includes(tile)) {
+            player.x = lx;
+            player.y = ly;
+            ship.boarded = false;
+            docked = true;
+            this.showNotification('Docked the ship.');
+            break;
+          }
+        }
+        if (!docked) {
+          this.showNotification('No land nearby to dock!');
+        }
+      }
     }
   },
 
