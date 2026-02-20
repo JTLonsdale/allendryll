@@ -3,7 +3,8 @@ const fs = require('fs');
 const path = require('path');
 
 const app = express();
-const PORT = 3000;
+const portArgIndex = process.argv.indexOf('--port');
+const PORT = (portArgIndex !== -1 && process.argv[portArgIndex + 1]) ? parseInt(process.argv[portArgIndex + 1], 10) : 3000;
 const SAVES_DIR = path.join(__dirname, 'saves');
 
 app.use(express.json());
