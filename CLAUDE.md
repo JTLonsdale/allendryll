@@ -35,6 +35,8 @@ public/
   assets/
     Spritesheet/       — Kenney roguelike tileset (16x16 tiles, 17px stride)
     Map/               — Tiled .tmx map files (not yet integrated)
+    art/               — Curated visual assets and style guide (Art Director managed)
+      style-guide.json — Canonical color palette, typography, and asset manifest
 saves/                 — Server-side JSON save files (gitignored)
 ```
 
@@ -86,7 +88,8 @@ For single-domain tasks, work directly without subagent overhead.
 |------|-------------|------|
 | Game Designer | `.claude/agents/game-designer.md` | Design suggestions (no code — produces specs for other agents) |
 | Engineer | `.claude/agents/engineer.md` | All JS, HTML, CSS, `server.js` |
-| World Builder | `.claude/agents/world-builder.md` | `public/assets/`, map data |
+| World Builder | `.claude/agents/world-builder.md` | `public/assets/Spritesheet/`, `public/assets/Map/`, map data |
+| Art Director | `.claude/agents/art-director.md` | Visual direction, style guide, curated image assets (`public/assets/art/`) |
 | QA Engineer | `.claude/agents/qa-engineer.md` | `tests/` |
 | Tech Lead | `.claude/agents/tech-lead.md` | Reviews all agents, maintains prompts & CLAUDE.md |
 

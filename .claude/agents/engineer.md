@@ -93,6 +93,7 @@ Tiles are 32x32 canvas-drawn and cached in an off-screen canvas. The Kenney tile
 
 - No build tools — edit files and refresh the browser to test
 - Colors: gold `#ffd700` for UI accents, pink `#e84393` for princess theme
+- When implementing visual changes, check `public/assets/art/style-guide.json` for canonical color values. Use palette constants from the style guide rather than ad-hoc hex values.
 - Canvas coordinates: tile positions are `(tileX * TILE_SIZE, tileY * TILE_SIZE)`
 - Camera offset: the renderer centers the camera on the player
 - Keep functions small and focused — this is a learning-friendly codebase
