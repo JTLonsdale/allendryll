@@ -1,6 +1,6 @@
 {
   "scripts": {
     "setup": "npm install",
-    "run": "npm start -- --port $CONDUCTOR_PORT"
+    "run": "node server.js --port $CONDUCTOR_PORT"
   }
 }
