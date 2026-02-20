@@ -24,12 +24,14 @@ public/
   css/style.css        — Minimal canvas styling
   js/
     map.js             — Tile types, procedural world generation (60x50 grid), walkability
-    player.js          — Party definitions, player state, movement
+    enemies.js         — Enemy type definitions (ENEMY_TYPES array, getRandomEnemy())
+    player.js          — Party definitions (with xp/level/attack/defense/spells), player state, movement
     input.js           — Keyboard input handler (keydown/keyup + consume pattern)
     renderer.js        — Canvas rendering: procedural tile cache, map drawing, player sprite, title/naming screens
     hud.js             — In-game HUD overlay (leader stats, gold)
+    battle.js          — Battle system: sub-state machine, enemy rendering, Web Audio SFX, encounter check
     save.js            — Save/load via fetch to server API
-    main.js            — Game loop, state machine (title → naming → playing)
+    main.js            — Game loop, state machine (title → naming → playing → battle)
   assets/
     Spritesheet/       — Kenney roguelike tileset (16x16 tiles, 17px stride)
     Map/               — Tiled .tmx map files (not yet integrated)
@@ -40,21 +42,22 @@ saves/                 — Server-side JSON save files (gitignored)
 
 ### Script Load Order (matters — no modules)
 Scripts are loaded via `<script>` tags in `index.html` in dependency order:
-`map.js → player.js → input.js → renderer.js → hud.js → save.js → main.js`
+`map.js → enemies.js → player.js → input.js → renderer.js → hud.js → battle.js → save.js → main.js`
 
 All state is shared via globals (`player`, `MAP_DATA`, `TILE`, `TILE_SIZE`, etc.).
 
 ### Game State Machine
-`Game.state` controls flow: `title` → `naming` → `playing`
+`Game.state` controls flow: `title` → `naming` → `playing` → `battle` → `playing`
 - **title:** Starfield background, press Enter to advance
 - **naming:** Rename the five princesses (arrow keys to select, Enter to edit, Escape to start)
-- **playing:** Overworld exploration with camera-centered scrolling
+- **playing:** Overworld exploration with camera-centered scrolling; random encounters trigger `battle`
+- **battle:** Full turn-based combat managed by `Battle` object with its own sub-state machine (`transition`, `menu`, `spell_menu`, `player_attack`, `player_spell`, `enemy_turn`, `victory`, `defeat`, `run_success`)
 
 ### World Generation (`map.js`)
 Procedural 60x50 tile map with: continent shaped by ellipse + value noise, northern mountain range with a pass, river, lake, forest regions, sand borders, flower meadows, 5 towns connected by paths with bridges. Uses seeded hash (`tileHash`) for deterministic randomness.
 
 ### The Party
-Five princesses with default names: Angeline (Leader), Bathena (Warrior), Bedalia (Mage), Banabelle (Healer), Bedava (Ranger). Each has HP/MP stats. Names are customizable at game start.
+Five princesses with default names: Angeline (Leader), Bathena (Warrior), Bedalia (Mage), Banabelle (Healer), Bedava (Ranger). Each has HP/MP/attack/defense/xp/level stats and a spells array. Names are customizable at game start.
 
 ### Rendering (`renderer.js`)
 Dual rendering system: sprite-based (Kenney tileset) and procedural (hand-drawn canvas tiles). Currently only procedural is active. Tiles are pre-rendered into an off-screen canvas cache for performance. Water tiles animate across 4 frames.
@@ -114,4 +117,4 @@ This applies to every task that results in code file changes, whether the task w
 
 ## What's Not Built Yet
 
-This is early-stage. Major systems still needed include: battle system, NPCs/dialogue, inventory/equipment, magic/spells, indoor maps/town interiors, enemy encounters, leveling/experience, story/quests, sound/music, and mobile/touch input.
+This is early-stage. Major systems still needed include: NPCs/dialogue, inventory/equipment, indoor maps/town interiors, leveling/experience (XP tracking exists but no level-up logic), story/quests, sound/music (battle SFX exists via Web Audio; overworld music absent), and mobile/touch input.

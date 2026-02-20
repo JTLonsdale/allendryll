@@ -84,6 +84,7 @@ const Renderer = {
     this._buildSandTile();
     this._buildBridgeTile();
     this._buildFlowerTile();
+    this._buildShipTile();
   },
 
   _makeTile() {
@@ -465,6 +466,52 @@ const Renderer = {
     }
   },
 
+  _buildShipTile() {
+    const { canvas, ctx } = this._makeTile();
+    const S = TILE_SIZE;
+    // Hull — boat-shaped polygon (pointy prow at top, wider stern at bottom)
+    ctx.fillStyle = '#8B5E3C';
+    ctx.beginPath();
+    ctx.moveTo(S / 2, 2);         // prow (top center)
+    ctx.lineTo(S - 4, S / 2);     // right mid
+    ctx.lineTo(S - 3, S - 4);     // right stern
+    ctx.lineTo(3, S - 4);         // left stern
+    ctx.lineTo(4, S / 2);         // left mid
+    ctx.closePath();
+    ctx.fill();
+    // Hull plank lines
+    ctx.strokeStyle = '#6B4226';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(6, 12);
+    ctx.lineTo(S - 6, 12);
+    ctx.moveTo(5, 18);
+    ctx.lineTo(S - 5, 18);
+    ctx.moveTo(4, 24);
+    ctx.lineTo(S - 4, 24);
+    ctx.stroke();
+    // Mast — dark brown vertical bar at center
+    ctx.fillStyle = '#5a3a18';
+    ctx.fillRect(S / 2 - 1, 4, 3, 22);
+    // Sail — cream/white triangle on the right side of the mast
+    ctx.fillStyle = '#f5f0e0';
+    ctx.beginPath();
+    ctx.moveTo(S / 2 + 2, 5);     // top of mast
+    ctx.lineTo(S - 5, 14);        // right point
+    ctx.lineTo(S / 2 + 2, 22);    // bottom of mast
+    ctx.closePath();
+    ctx.fill();
+    // Pink accent stripe on the sail (princess theme)
+    ctx.fillStyle = '#e84393';
+    ctx.beginPath();
+    ctx.moveTo(S / 2 + 2, 12);
+    ctx.lineTo(S - 8, 14);
+    ctx.lineTo(S / 2 + 2, 16);
+    ctx.closePath();
+    ctx.fill();
+    this.tileCache['proc_ship_0'] = canvas;
+  },
+
   // Get the correct cached tile canvas for a tile type at position (x,y)
   getTileCached(type, x, y) {
     const h = (x * 31 + y * 17) & 0xffff; // cheap variant hash
@@ -554,6 +601,16 @@ const Renderer = {
         }
       }
     }
+
+    // Draw ship on the map when not boarded
+    if (!ship.boarded) {
+      const shipDx = Math.floor(ship.x * TILE_SIZE - camX);
+      const shipDy = Math.floor(ship.y * TILE_SIZE - camY);
+      if (shipDx > -TILE_SIZE && shipDx < this.canvas.width && shipDy > -TILE_SIZE && shipDy < this.canvas.height) {
+        const shipTile = this.tileCache['proc_ship_0'];
+        if (shipTile) this.ctx.drawImage(shipTile, shipDx, shipDy);
+      }
+    }
   },
 
   drawPlayer() {
@@ -561,30 +618,41 @@ const Renderer = {
     const px = this.canvas.width / 2 - TILE_SIZE / 2;
     const py = this.canvas.height / 2 - TILE_SIZE / 2;
 
+    if (ship.boarded) {
+      // Draw ship tile under the princess
+      const shipTile = this.tileCache['proc_ship_0'];
+      if (shipTile) ctx.drawImage(shipTile, px, py);
+    }
+
+    // Princess sprite (shifted up 4px when sailing so she stands in the ship)
+    const yOff = ship.boarded ? -4 : 0;
+
     // Body
     ctx.fillStyle = '#e84393';
-    ctx.fillRect(px + 6, py + 8, 20, 16);
+    ctx.fillRect(px + 6, py + 8 + yOff, 20, 16);
     // Head
     ctx.fillStyle = '#ffeaa7';
-    ctx.fillRect(px + 9, py + 1, 14, 12);
+    ctx.fillRect(px + 9, py + 1 + yOff, 14, 12);
     // Hair
     ctx.fillStyle = '#fdcb6e';
-    ctx.fillRect(px + 7, py + 0, 18, 5);
+    ctx.fillRect(px + 7, py + 0 + yOff, 18, 5);
     // Eyes
     ctx.fillStyle = '#2d3436';
     const eyeOffset = player.direction === 'left' ? -2 : player.direction === 'right' ? 2 : 0;
-    ctx.fillRect(px + 12 + eyeOffset, py + 5, 2, 2);
-    ctx.fillRect(px + 18 + eyeOffset, py + 5, 2, 2);
+    ctx.fillRect(px + 12 + eyeOffset, py + 5 + yOff, 2, 2);
+    ctx.fillRect(px + 18 + eyeOffset, py + 5 + yOff, 2, 2);
     // Crown
     ctx.fillStyle = '#ffd700';
-    ctx.fillRect(px + 10, py - 3, 12, 4);
-    ctx.fillRect(px + 10, py - 6, 3, 3);
-    ctx.fillRect(px + 15, py - 7, 3, 4);
-    ctx.fillRect(px + 20, py - 6, 3, 3);
-    // Legs
-    ctx.fillStyle = '#e84393';
-    ctx.fillRect(px + 9, py + 24, 5, 6);
-    ctx.fillRect(px + 18, py + 24, 5, 6);
+    ctx.fillRect(px + 10, py - 3 + yOff, 12, 4);
+    ctx.fillRect(px + 10, py - 6 + yOff, 3, 3);
+    ctx.fillRect(px + 15, py - 7 + yOff, 3, 4);
+    ctx.fillRect(px + 20, py - 6 + yOff, 3, 3);
+    // Legs (hidden when boarded — inside the ship)
+    if (!ship.boarded) {
+      ctx.fillStyle = '#e84393';
+      ctx.fillRect(px + 9, py + 24 + yOff, 5, 6);
+      ctx.fillRect(px + 18, py + 24 + yOff, 5, 6);
+    }
   },
 
   drawTitleScreen() {

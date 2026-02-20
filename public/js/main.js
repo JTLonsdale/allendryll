@@ -1,5 +1,5 @@
 const Game = {
-  state: 'title', // title | naming | recruiting | playing
+  state: 'title', // title | naming | recruiting | playing | battle
   notification: null,
   notificationTimer: 0,
   editingName: null,
@@ -29,6 +29,12 @@ const Game = {
   update() {
     if (this.notificationTimer > 0) this.notificationTimer--;
     if (this.notificationTimer === 0) this.notification = null;
+
+    // Battle system handles its own input
+    if (this.state === 'battle') {
+      Battle.update();
+      return;
+    }
 
     const key = Input.consume();
 
@@ -114,13 +120,23 @@ const Game = {
       return;
     }
 
+    // Movement from held keys (faster when sailing), check for random encounters
+    const moveSpeed = ship.boarded ? 4 : 8;
     let moved = false;
-    if (Input.keys['ArrowUp'])         { movePlayer(0, -1); this.moveDelay = 8; moved = true; }
-    else if (Input.keys['ArrowDown'])  { movePlayer(0, 1);  this.moveDelay = 8; moved = true; }
-    else if (Input.keys['ArrowLeft'])  { movePlayer(-1, 0); this.moveDelay = 8; moved = true; }
-    else if (Input.keys['ArrowRight']) { movePlayer(1, 0);  this.moveDelay = 8; moved = true; }
+    if (Input.keys['ArrowUp'])         { moved = movePlayer(0, -1); this.moveDelay = moveSpeed; }
+    else if (Input.keys['ArrowDown'])  { moved = movePlayer(0, 1);  this.moveDelay = moveSpeed; }
+    else if (Input.keys['ArrowLeft'])  { moved = movePlayer(-1, 0); this.moveDelay = moveSpeed; }
+    else if (Input.keys['ArrowRight']) { moved = movePlayer(1, 0);  this.moveDelay = moveSpeed; }
 
-    if (moved) {
+    // Check for random encounter after a successful move (not while sailing)
+    if (moved && !ship.boarded && checkRandomEncounter()) {
+      this.state = 'battle';
+      Battle.start();
+      return;
+    }
+
+    // Check for recruitment after movement (not while sailing)
+    if (moved && !ship.boarded) {
       this.checkRecruitment();
     }
 
@@ -129,6 +145,42 @@ const Game = {
     }
     if (key === 'l' || key === 'L') {
       Save.load().then(ok => this.showNotification(ok ? 'Game Loaded!' : 'No Save Found!'));
+    }
+
+    // Ship boarding/docking
+    if (key === ' ') {
+      if (!ship.boarded) {
+        // Board the ship if adjacent (Manhattan distance <= 1)
+        const dist = Math.abs(player.x - ship.x) + Math.abs(player.y - ship.y);
+        if (dist <= 1) {
+          player.x = ship.x;
+          player.y = ship.y;
+          ship.boarded = true;
+          this.showNotification('Boarded the ship!');
+        }
+      } else {
+        // Dock: find adjacent walkable land tile
+        const landTiles = [TILE.SAND, TILE.GRASS, TILE.PATH, TILE.TOWN, TILE.BRIDGE, TILE.FLOWERS];
+        const dirs = [[0,-1],[0,1],[-1,0],[1,0]];
+        let docked = false;
+        for (const [ddx, ddy] of dirs) {
+          const lx = player.x + ddx;
+          const ly = player.y + ddy;
+          if (lx < 0 || ly < 0 || lx >= MAP_COLS || ly >= MAP_ROWS) continue;
+          const tile = getTile(lx, ly);
+          if (landTiles.includes(tile)) {
+            player.x = lx;
+            player.y = ly;
+            ship.boarded = false;
+            docked = true;
+            this.showNotification('Docked the ship.');
+            break;
+          }
+        }
+        if (!docked) {
+          this.showNotification('No land nearby to dock!');
+        }
+      }
     }
   },
 
@@ -145,6 +197,8 @@ const Game = {
       Renderer.drawMap();
       Renderer.drawPlayer();
       HUD.draw(Renderer.ctx, Renderer.canvas);
+    } else if (this.state === 'battle') {
+      Battle.render(Renderer.ctx, Renderer.canvas);
     }
 
     if (this.notification) {
