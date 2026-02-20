@@ -102,6 +102,10 @@ const Renderer = {
     this._buildFenceTile();
     this._buildGardenTile();
     this._buildSignTile();
+    this._buildSignInnTile();
+    this._buildSignWeaponTile();
+    this._buildSignItemTile();
+    this._buildSignSpecialTile();
     this._buildRoofTile();
     this._buildInnBedTile();
     this._buildBookshelfTile();
@@ -844,6 +848,179 @@ const Renderer = {
     this.tileCache['proc_sign_0'] = canvas;
   },
 
+  _buildSignInnTile() {
+    const { canvas, ctx } = this._makeTile();
+    const S = TILE_SIZE;
+    // Cobblestone base
+    ctx.fillStyle = '#9a8a7a';
+    ctx.fillRect(0, 0, S, S);
+    ctx.strokeStyle = 'rgba(60,50,40,0.3)';
+    ctx.lineWidth = 0.5;
+    for (let r = 0; r < 4; r++) {
+      for (let c = 0; c < 4; c++) {
+        ctx.strokeRect(c * 8 + (r % 2 === 0 ? 0 : 4), r * 8, 8, 8);
+      }
+    }
+    // Wooden post
+    ctx.fillStyle = '#5a3a18';
+    ctx.fillRect(S / 2 - 1, 14, 3, 18);
+    // Sign board
+    ctx.fillStyle = '#8a6a3a';
+    ctx.fillRect(S / 2 - 8, 6, 16, 10);
+    ctx.strokeStyle = '#6b4423';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(S / 2 - 8, 6, 16, 10);
+    // Crescent moon icon
+    ctx.fillStyle = '#ddeeff';
+    ctx.beginPath();
+    ctx.arc(S / 2, 11, 4, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#8a6a3a';
+    ctx.beginPath();
+    ctx.arc(S / 2 + 2, 10, 3.5, 0, Math.PI * 2);
+    ctx.fill();
+    this.tileCache['proc_signinn_0'] = canvas;
+  },
+
+  _buildSignWeaponTile() {
+    const { canvas, ctx } = this._makeTile();
+    const S = TILE_SIZE;
+    // Cobblestone base
+    ctx.fillStyle = '#9a8a7a';
+    ctx.fillRect(0, 0, S, S);
+    ctx.strokeStyle = 'rgba(60,50,40,0.3)';
+    ctx.lineWidth = 0.5;
+    for (let r = 0; r < 4; r++) {
+      for (let c = 0; c < 4; c++) {
+        ctx.strokeRect(c * 8 + (r % 2 === 0 ? 0 : 4), r * 8, 8, 8);
+      }
+    }
+    // Wooden post
+    ctx.fillStyle = '#5a3a18';
+    ctx.fillRect(S / 2 - 1, 14, 3, 18);
+    // Sign board
+    ctx.fillStyle = '#8a3030';
+    ctx.fillRect(S / 2 - 8, 6, 16, 10);
+    ctx.strokeStyle = '#6b2020';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(S / 2 - 8, 6, 16, 10);
+    // Crossed swords icon
+    ctx.strokeStyle = '#ddd';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(S / 2 - 5, 8);
+    ctx.lineTo(S / 2 + 5, 14);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(S / 2 + 5, 8);
+    ctx.lineTo(S / 2 - 5, 14);
+    ctx.stroke();
+    // Small diamond hilts
+    ctx.fillStyle = '#ccc';
+    ctx.beginPath();
+    ctx.moveTo(S / 2 - 5, 8);
+    ctx.lineTo(S / 2 - 4, 7);
+    ctx.lineTo(S / 2 - 3, 8);
+    ctx.lineTo(S / 2 - 4, 9);
+    ctx.closePath();
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(S / 2 + 5, 8);
+    ctx.lineTo(S / 2 + 6, 7);
+    ctx.lineTo(S / 2 + 7, 8);
+    ctx.lineTo(S / 2 + 6, 9);
+    ctx.closePath();
+    ctx.fill();
+    this.tileCache['proc_signweapon_0'] = canvas;
+  },
+
+  _buildSignItemTile() {
+    const { canvas, ctx } = this._makeTile();
+    const S = TILE_SIZE;
+    // Cobblestone base
+    ctx.fillStyle = '#9a8a7a';
+    ctx.fillRect(0, 0, S, S);
+    ctx.strokeStyle = 'rgba(60,50,40,0.3)';
+    ctx.lineWidth = 0.5;
+    for (let r = 0; r < 4; r++) {
+      for (let c = 0; c < 4; c++) {
+        ctx.strokeRect(c * 8 + (r % 2 === 0 ? 0 : 4), r * 8, 8, 8);
+      }
+    }
+    // Wooden post
+    ctx.fillStyle = '#5a3a18';
+    ctx.fillRect(S / 2 - 1, 14, 3, 18);
+    // Sign board
+    ctx.fillStyle = '#3a6a3a';
+    ctx.fillRect(S / 2 - 8, 6, 16, 10);
+    ctx.strokeStyle = '#2a5a2a';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(S / 2 - 8, 6, 16, 10);
+    // Potion bottle icon
+    ctx.fillStyle = '#88ddff';
+    // Bottle neck
+    ctx.fillRect(S / 2 - 1, 7, 2, 3);
+    // Bottle body (trapezoid as filled path)
+    ctx.beginPath();
+    ctx.moveTo(S / 2 - 1, 10);
+    ctx.lineTo(S / 2 - 3, 14);
+    ctx.lineTo(S / 2 + 3, 14);
+    ctx.lineTo(S / 2 + 1, 10);
+    ctx.closePath();
+    ctx.fill();
+    // Cork / stopper
+    ctx.fillStyle = '#a07840';
+    ctx.fillRect(S / 2 - 1, 7, 2, 1);
+    this.tileCache['proc_signitem_0'] = canvas;
+  },
+
+  _buildSignSpecialTile() {
+    const { canvas, ctx } = this._makeTile();
+    const S = TILE_SIZE;
+    // Cobblestone base
+    ctx.fillStyle = '#9a8a7a';
+    ctx.fillRect(0, 0, S, S);
+    ctx.strokeStyle = 'rgba(60,50,40,0.3)';
+    ctx.lineWidth = 0.5;
+    for (let r = 0; r < 4; r++) {
+      for (let c = 0; c < 4; c++) {
+        ctx.strokeRect(c * 8 + (r % 2 === 0 ? 0 : 4), r * 8, 8, 8);
+      }
+    }
+    // Wooden post
+    ctx.fillStyle = '#5a3a18';
+    ctx.fillRect(S / 2 - 1, 14, 3, 18);
+    // Sign board
+    ctx.fillStyle = '#5a3a7a';
+    ctx.fillRect(S / 2 - 8, 6, 16, 10);
+    ctx.strokeStyle = '#4a2a6a';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(S / 2 - 8, 6, 16, 10);
+    // Gold star icon
+    ctx.fillStyle = '#ffd700';
+    const cx = S / 2;
+    const cy = 11;
+    const or = 4;
+    const ir = 1.5;
+    ctx.beginPath();
+    for (let p = 0; p < 5; p++) {
+      // Outer point
+      const outerAngle = -Math.PI / 2 + p * (2 * Math.PI / 5);
+      const ox = cx + or * Math.cos(outerAngle);
+      const oy = cy + or * Math.sin(outerAngle);
+      if (p === 0) ctx.moveTo(ox, oy);
+      else ctx.lineTo(ox, oy);
+      // Inner point
+      const innerAngle = outerAngle + Math.PI / 5;
+      const ix = cx + ir * Math.cos(innerAngle);
+      const iy = cy + ir * Math.sin(innerAngle);
+      ctx.lineTo(ix, iy);
+    }
+    ctx.closePath();
+    ctx.fill();
+    this.tileCache['proc_signspecial_0'] = canvas;
+  },
+
   _buildRoofTile() {
     for (let v = 0; v < 2; v++) {
       const { canvas, ctx } = this._makeTile();
@@ -1015,6 +1192,10 @@ const Renderer = {
       case TILE.FENCE:        return this.tileCache['proc_fence_0'];
       case TILE.GARDEN:       return this.tileCache['proc_garden_0'];
       case TILE.SIGN:         return this.tileCache['proc_sign_0'];
+      case TILE.SIGN_INN:     return this.tileCache['proc_signinn_0'];
+      case TILE.SIGN_WEAPON:  return this.tileCache['proc_signweapon_0'];
+      case TILE.SIGN_ITEM:    return this.tileCache['proc_signitem_0'];
+      case TILE.SIGN_SPECIAL: return this.tileCache['proc_signspecial_0'];
       case TILE.ROOF:         return this.tileCache[`proc_roof_${h % 2}`];
       case TILE.INN_BED:      return this.tileCache['proc_innbed_0'];
       case TILE.BOOKSHELF:    return this.tileCache['proc_bookshelf_0'];
