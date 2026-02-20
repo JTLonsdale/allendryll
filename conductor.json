@@ -1,6 +1,6 @@
 {
-  "run": {
-    "command": "npm start",
-    "url": "http://localhost:3000"
+  "scripts": {
+    "setup": "npm install",
+    "run": "npm start -- --port $CONDUCTOR_PORT"
   }
 }
