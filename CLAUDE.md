@@ -47,9 +47,10 @@ Scripts are loaded via `<script>` tags in `index.html` in dependency order:
 All state is shared via globals (`player`, `MAP_DATA`, `TILE`, `TILE_SIZE`, etc.).
 
 ### Game State Machine
-`Game.state` controls flow: `title` → `naming` → `playing` → `battle` → `playing`
+`Game.state` controls flow: `title` → `naming` → `recruiting` (optional) → `playing` → `battle` → `playing`
 - **title:** Starfield background, press Enter to advance
-- **naming:** Rename the five princesses (arrow keys to select, Enter to edit, Escape to start)
+- **naming:** Rename the five princesses (arrow keys to select, Enter to edit, Escape to skip)
+- **recruiting:** Town-based recruitment (optional: shown if party incomplete); select new members to join, Escape to start game
 - **playing:** Overworld exploration with camera-centered scrolling; random encounters trigger `battle`
 - **battle:** Full turn-based combat managed by `Battle` object with its own sub-state machine (`transition`, `menu`, `spell_menu`, `player_attack`, `player_spell`, `enemy_turn`, `victory`, `defeat`, `run_success`)
 

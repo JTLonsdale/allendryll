@@ -24,7 +24,7 @@ You may **read** `.claude/agents/` and `CLAUDE.md` for context but must **never 
 This project uses `<script>` tags, **not** ES modules. There are no `import`/`export` statements. All state is shared via globals on `window`. Script load order matters:
 
 ```
-map.js -> player.js -> input.js -> renderer.js -> hud.js -> save.js -> main.js
+map.js -> enemies.js -> player.js -> input.js -> renderer.js -> hud.js -> battle.js -> save.js -> main.js
 ```
 
 When adding a new JS file:
@@ -46,8 +46,16 @@ Key globals available to all scripts:
 - `Save` — save/load functions
 
 ### Game State Machine
-`Game.state` controls flow: `title` -> `naming` -> `playing`
-When adding new states (e.g., `battle`, `menu`, `dialogue`):
+`Game.state` controls flow: `title` -> `naming` -> `recruiting` (optional) -> `playing` -> `battle` -> `playing`
+
+**State Descriptions:**
+- **title**: Starfield, press Enter to advance
+- **naming**: Rename five princesses, Escape to skip to recruiting/playing
+- **recruiting**: Town recruitment screen (conditionally shown if not all 5 party members recruited); select new members, Escape to start game
+- **playing**: Overworld exploration; encounter checks trigger battle state
+- **battle**: Turn-based combat with sub-states
+
+When adding new states (e.g., `menu`, `dialogue`):
 1. Add the state string to `Game.state` checks in `main.js`
 2. Add `update` and `render` logic for the new state
 3. Handle transitions in and out of the state
