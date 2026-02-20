@@ -40,6 +40,12 @@ const player = {
   direction: 'down',
 };
 
+const ship = {
+  x: SHIP_SPAWN.x,
+  y: SHIP_SPAWN.y,
+  boarded: false
+};
+
 function movePlayer(dx, dy) {
   const nx = player.x + dx;
   const ny = player.y + dy;
@@ -47,16 +53,33 @@ function movePlayer(dx, dy) {
   if (dx === 1) player.direction = 'right';
   if (dy === -1) player.direction = 'up';
   if (dy === 1) player.direction = 'down';
-  if (isWalkable(nx, ny)) {
-    player.x = nx;
-    player.y = ny;
-    return true; // player actually moved
+  if (ship.boarded) {
+    // Sailing: allow movement onto WATER and BRIDGE tiles only
+    if (nx < 0 || ny < 0 || nx >= MAP_COLS || ny >= MAP_ROWS) return false;
+    const tile = getTile(nx, ny);
+    if (tile === TILE.WATER || tile === TILE.BRIDGE) {
+      player.x = nx;
+      player.y = ny;
+      ship.x = nx;
+      ship.y = ny;
+      return true;
+    }
+  } else {
+    if (isWalkable(nx, ny)) {
+      player.x = nx;
+      player.y = ny;
+      return true;
+    }
   }
   return false; // blocked
 }
 
 function getPlayerState() {
-  return { x: player.x, y: player.y, gold: player.gold, items: player.items, party: player.party, direction: player.direction };
+  return {
+    x: player.x, y: player.y, gold: player.gold, items: player.items,
+    party: player.party, direction: player.direction,
+    ship: { x: ship.x, y: ship.y, boarded: ship.boarded }
+  };
 }
 
 function loadPlayerState(state) {
@@ -66,4 +89,9 @@ function loadPlayerState(state) {
   player.items = state.items;
   player.party = state.party;
   player.direction = state.direction || 'down';
+  if (state.ship) {
+    ship.x = state.ship.x;
+    ship.y = state.ship.y;
+    ship.boarded = state.ship.boarded;
+  }
 }

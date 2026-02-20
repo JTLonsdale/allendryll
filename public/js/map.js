@@ -278,3 +278,26 @@ function getTile(x, y) {
 function isWalkable(x, y) {
   return WALKABLE[getTile(x, y)] === true;
 }
+
+// Find a SAND tile adjacent to WATER near the target coordinate
+function findShipSpawn(targetX, targetY, radius) {
+  for (let r = 0; r <= radius; r++) {
+    for (let dy = -r; dy <= r; dy++) {
+      for (let dx = -r; dx <= r; dx++) {
+        if (Math.abs(dx) !== r && Math.abs(dy) !== r) continue;
+        const x = targetX + dx, y = targetY + dy;
+        if (x < 0 || y < 0 || x >= MAP_COLS || y >= MAP_ROWS) continue;
+        if (MAP_DATA[y][x] !== TILE.SAND) continue;
+        const neighbors = [[x-1,y],[x+1,y],[x,y-1],[x,y+1]];
+        for (const [nx, ny] of neighbors) {
+          if (nx >= 0 && ny >= 0 && nx < MAP_COLS && ny < MAP_ROWS && MAP_DATA[ny][nx] === TILE.WATER) {
+            return { x, y };
+          }
+        }
+      }
+    }
+  }
+  return { x: targetX, y: targetY };
+}
+
+const SHIP_SPAWN = findShipSpawn(30, 45, 5);
