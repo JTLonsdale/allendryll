@@ -72,6 +72,46 @@ Dual rendering system: sprite-based (Kenney tileset) and procedural (hand-drawn 
 - Colors: gold (#ffd700) for UI accents, pink (#e84393) for princess theme
 - Save files are plain JSON stored server-side in `saves/`
 
+## Agent Roles
+
+For tasks that span multiple domains, **dispatch parallel subagents via the Task tool**. Each agent's prompt file lives in `.claude/agents/` — read the relevant file and pass its contents as the prompt prefix, followed by the specific task.
+
+For single-domain tasks, work directly without subagent overhead.
+
+| Role | Prompt File | Owns |
+|------|-------------|------|
+| Game Designer | `.claude/agents/game-designer.md` | Design suggestions (no code — produces specs for other agents) |
+| Engineer | `.claude/agents/engineer.md` | All JS, HTML, CSS, `server.js` |
+| World Builder | `.claude/agents/world-builder.md` | `public/assets/`, map data |
+| QA Engineer | `.claude/agents/qa-engineer.md` | `tests/` |
+| Tech Lead | `.claude/agents/tech-lead.md` | Reviews all agents, maintains prompts & CLAUDE.md |
+
+**Workflow**: After domain agents finish, dispatch the Tech Lead to review their combined output. The Tech Lead will flag issues, verify cross-domain integration, and update agent prompts if recurring problems are found.
+
+**Game design suggestions**: Use `/suggestions` to trigger the Game Designer agent for a prioritized list of next improvements. The Game Designer reads all current JS files and suggests incremental changes ordered by effort-to-impact ratio.
+
+**Code review and PR**: Use `/review-and-pr` to review unpushed changes, select the best-suited agent for the review based on which files changed, perform the review, then commit and create a GitHub PR.
+
+**Next feature pipeline**: Use `/next-feature` to orchestrate the full design -> implement -> review cycle for the next game feature.
+
+**Fix issues**: Use `/fix-issues` to find and fix all open GitHub issues.
+
+## Subagent Usage Reporting
+
+After completing any request that changed code files (`.js`, `.json`, `.css`, `.html`, or other non-`.md` files), include a **Subagents Used** summary at the end of your response. This helps verify that the right agents are being dispatched for multi-domain tasks.
+
+Format:
+```
+**Subagents Used:** Engineer, QA Engineer
+```
+
+If no subagents were used, explicitly say so:
+```
+**Subagents Used:** None (single-domain task, worked directly)
+```
+
+This applies to every task that results in code file changes, whether the task was simple or complex. Skip this only when the task exclusively touched `.md` files.
+
 ## What's Not Built Yet
 
 This is early-stage. Major systems still needed include: battle system, NPCs/dialogue, inventory/equipment, magic/spells, indoor maps/town interiors, enemy encounters, leveling/experience, story/quests, sound/music, and mobile/touch input.
