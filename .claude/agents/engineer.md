@@ -52,6 +52,23 @@ When adding new states (e.g., `battle`, `menu`, `dialogue`):
 2. Add `update` and `render` logic for the new state
 3. Handle transitions in and out of the state
 
+**Critical rule: never use `setTimeout` or `setInterval` to change `Game.state` or any sub-state.** The game loop runs at ~60fps via `requestAnimationFrame`. All state transitions must happen inside `update()`, driven by a frame counter (`turnTimer`, `moveDelay`, etc.). A `setTimeout` that sets `Game.state` creates a race condition: the timer fires off-tick, after the game loop may have already changed state for other reasons, producing corrupted or stuck states. Instead, use the pattern already established for animations:
+
+```js
+// Bad — fires outside the game loop, race condition:
+setTimeout(function() { Game.state = 'playing'; }, 500);
+
+// Good — transition happens inside update(), synchronized with the loop:
+case 'run_success':
+  this.turnTimer++;
+  if (this.turnTimer > 30) {
+    Game.state = 'playing';
+  }
+  break;
+```
+
+Every sub-state that a system introduces must have a corresponding `case` in both its `update()` switch and its `render()` switch. A sub-state with no `update` case silently drops input (because `Input.consume()` fires at the top of `update()` before the switch).
+
 ### Canvas Rendering
 Everything is drawn on a single `<canvas>` element (800x600). There is no DOM game UI — the HUD, menus, text, and all visuals are canvas-drawn. When adding UI elements, draw them on canvas via `Renderer` or a new rendering module.
 
