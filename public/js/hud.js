@@ -55,6 +55,10 @@ const HUD = {
     ctx.font = '13px sans-serif';
     ctx.fillText(`Gold: ${player.gold}`, px + 12, py + 100);
 
+    // Party count
+    ctx.fillStyle = '#e84393';
+    ctx.fillText('Party: ' + player.party.length + '/5', px + 120, py + 100);
+
     // Ship prompts
     if (ship.boarded) {
       this._drawPrompt(ctx, canvas, 'Sailing - SPACE to dock');

@@ -301,3 +301,41 @@ function findShipSpawn(targetX, targetY, radius) {
 }
 
 const SHIP_SPAWN = findShipSpawn(30, 45, 5);
+
+// Town-to-princess recruitment mapping (excludes capital at 28,24 — that's Angeline's home)
+const TOWN_RECRUITMENT = {
+  '15,11': {
+    name: 'Bathena', role: 'Warrior',
+    hp: 60, maxHp: 60, mp: 10, maxMp: 10,
+    attack: 16, defense: 10, xp: 0, level: 1,
+    spells: []
+  },
+  '48,11': {
+    name: 'Bedalia', role: 'Mage',
+    hp: 35, maxHp: 35, mp: 40, maxMp: 40,
+    attack: 6, defense: 5, xp: 0, level: 1,
+    spells: [{ name: 'Fireball', damage: 30, cost: 12 }, { name: 'Ice Storm', damage: 25, cost: 10 }]
+  },
+  '13,38': {
+    name: 'Banabelle', role: 'Healer',
+    hp: 40, maxHp: 40, mp: 35, maxMp: 35,
+    attack: 8, defense: 7, xp: 0, level: 1,
+    spells: [{ name: 'Holy Light', damage: 18, cost: 6 }]
+  },
+  '46,36': {
+    name: 'Bedava', role: 'Ranger',
+    hp: 45, maxHp: 45, mp: 15, maxMp: 15,
+    attack: 14, defense: 6, xp: 0, level: 1,
+    spells: [{ name: 'Poison Arrow', damage: 22, cost: 8 }]
+  },
+};
+
+function getTownAt(x, y) {
+  for (const key of Object.keys(TOWN_RECRUITMENT)) {
+    const [tx, ty] = key.split(',').map(Number);
+    if (Math.abs(x - tx) <= 1 && Math.abs(y - ty) <= 1) {
+      return key;
+    }
+  }
+  return null;
+}

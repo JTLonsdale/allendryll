@@ -36,7 +36,7 @@ const player = {
   y: 26,
   gold: 100,
   items: [],
-  party: JSON.parse(JSON.stringify(DEFAULT_PARTY)),
+  party: [JSON.parse(JSON.stringify(DEFAULT_PARTY[0]))],
   direction: 'down',
 };
 
