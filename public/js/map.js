@@ -9,7 +9,9 @@ const TILE = {
   TOWN_EXIT: 18, STREAM: 19, TOWN_BRIDGE: 20, FOUNTAIN: 21,
   WELL: 22, FENCE: 23, GARDEN: 24, SIGN: 25,
   ROOF: 26, INN_BED: 27, BOOKSHELF: 28, TOWN_FLOWERS: 29,
-  DOCK: 30, STONE_CIRCLE: 31
+  DOCK: 30, STONE_CIRCLE: 31,
+  // Building-type signs (32-35)
+  SIGN_INN: 32, SIGN_WEAPON: 33, SIGN_ITEM: 34, SIGN_SPECIAL: 35
 };
 const TILE_SIZE = 32;
 
@@ -26,7 +28,8 @@ const WALKABLE = {
   [TILE.WELL]: false, [TILE.FENCE]: false, [TILE.GARDEN]: false,
   [TILE.SIGN]: false, [TILE.ROOF]: false, [TILE.INN_BED]: false,
   [TILE.BOOKSHELF]: false, [TILE.TOWN_FLOWERS]: true, [TILE.DOCK]: true,
-  [TILE.STONE_CIRCLE]: false
+  [TILE.STONE_CIRCLE]: false,
+  [TILE.SIGN_INN]: false, [TILE.SIGN_WEAPON]: false, [TILE.SIGN_ITEM]: false, [TILE.SIGN_SPECIAL]: false
 };
 
 // Seeded hash for deterministic randomness
