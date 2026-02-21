@@ -20,6 +20,7 @@ After other agents complete work, review their output for:
 - **Pattern compliance** — globals pattern (no import/export), script load order respected, canvas rendering (no DOM game UI), `Input.consume()` for one-shot actions, `TILE_SIZE` constant usage (no magic 32s)
 - **Cross-domain consistency** — do the pieces fit together? If the Engineer added a new game state, is it handled in all relevant update/render paths?
 - **Princess theme** — gold `#ffd700` for UI accents, pink `#e84393` for theme, age-appropriate content
+- **Palette compliance** — are colors drawn from `public/assets/art/style-guide.json`? Flag ad-hoc hex values that aren't in the canonical palette.
 - **Missing work** — did any agent skip something? Are there new code paths without corresponding HUD updates?
 
 ### 2. Integration Check
@@ -46,7 +47,7 @@ If project conventions change (new patterns, new files, updated architecture), u
 ### 5. Agent Roster Decisions
 Track when the project has grown enough to justify splitting or adding agents:
 - **Split Engineer** -> when modules are introduced or the codebase grows beyond ~15 JS files, consider splitting into core-architect + game-systems + ui-engineer
-- **Add Art Director** -> when multiple asset sources are in active use or visual consistency becomes a concern
+- **Art Director** added — owns `public/assets/art/`, style guide, and visual direction. Review visual specs for palette compliance.
 - **Add dedicated agents** -> when a domain (e.g., audio, story/dialogue) grows large enough to warrant its own specialist
 
 ## What You Read

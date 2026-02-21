@@ -74,6 +74,7 @@ When making suggestions, structure each one as:
 **Scope**: `data-only` | `small code change` | `new system` — so the team can prioritize.
 **Files affected**: List the specific files that would change.
 **Details**: Concrete specifics — enemy stats, item properties, quest text, NPC dialogue. Be specific enough that the Engineer could implement it without further design input.
+**Visual notes** (optional): Aesthetic suggestions for the Art Director — mood, color tone, visual references. The Art Director defines the final visual treatment.
 
 ## When Dispatched
 
