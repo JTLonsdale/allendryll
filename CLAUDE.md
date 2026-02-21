@@ -87,6 +87,7 @@ For single-domain tasks, work directly without subagent overhead.
 | Role | Prompt File | Owns |
 |------|-------------|------|
 | Game Designer | `.claude/agents/game-designer.md` | Design suggestions (no code — produces specs for other agents) |
+| Storyteller | `.claude/agents/storyteller.md` | Story bible (`docs/story-bible.md`), narrative arcs, character journeys (no code — produces story documents) |
 | Engineer | `.claude/agents/engineer.md` | All JS, HTML, CSS, `server.js` |
 | World Builder | `.claude/agents/world-builder.md` | `public/assets/Spritesheet/`, `public/assets/Map/`, map data |
 | Art Director | `.claude/agents/art-director.md` | Visual direction, style guide, curated image assets (`public/assets/art/`) |
